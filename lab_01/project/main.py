@@ -19,21 +19,28 @@ def inputData():
  
     return xValue, polyPow
 
-initTable = Table()
+NewtonTable = Table("Newton")
+HermitTable = Table("Hermit")
 
-initTable.readData("data.csv")
-initTable.printData("\nInit table: ")
+NewtonTable.readData("data.csv")
+
+HermitTable.readData("data.csv")
+
+NewtonTable.printData("\nInit table: ")
 
 xValue, polyPow = inputData()
 
-initTable.makeConfiguration(xValue, polyPow)
-initTable.duplicateConfiguration()
+NewtonTable.makeConfiguration(xValue, polyPow)
+ca.calculateDividedDiffNewton(NewtonTable)
 
-# ca.calculateDividedDiffNewton(initTable)
-# print(ca.getNewtonPoly(initTable, xValue))
+HermitTable.makeConfiguration(xValue, polyPow)
+HermitTable.duplicateConfiguration()
 
-ca.calculateDividedDiffHermit(initTable)
+ca.calculateDividedDiffHermit(HermitTable)
 
-initTable.printData("\nNewton method:")
+NewtonTable.printData("\nNewton method:")
+HermitTable.printData("\nHermit method:")
 
-# TODO: доделать main и графики
+ca.getNewtonPoly(NewtonTable, xValue)
+ca.getHermitPoly(HermitTable, xValue)
+

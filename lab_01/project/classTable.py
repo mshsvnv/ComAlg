@@ -3,7 +3,9 @@ import numpy as np
 import prettytable as pt
 class Table:
 
-    def __init__(self):
+    def __init__(self, method: str):
+
+        self.method = method
 
         self.table = None    # table for output
         self.data = None     # init data
