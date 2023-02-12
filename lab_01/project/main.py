@@ -38,9 +38,13 @@ HermitTable.duplicateConfiguration()
 
 ca.calculateDividedDiffHermit(HermitTable)
 
-NewtonTable.printData("\nNewton method:")
-HermitTable.printData("\nHermit method:")
+NewtonTable.printData("\nNewton's method:")
+HermitTable.printData("\nHermit's method:")
 
-ca.getNewtonPoly(NewtonTable, xValue)
-ca.getHermitPoly(HermitTable, xValue)
+ca.getPolyValue(NewtonTable, xValue, True)
+ca.getPolyValue(HermitTable, xValue, True)
+
+ca.drawGraphs(NewtonTable, HermitTable)
+
+# TODO: обратная интерполяция Ньютона и Эрмита
 
