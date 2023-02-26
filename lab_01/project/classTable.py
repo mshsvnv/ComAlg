@@ -1,21 +1,22 @@
 import csv 
 import numpy as np
 import prettytable as pt
+import calcAlg as ca
 class Table:
 
     def __init__(self, method: str):
 
         self.method = method
 
-        self.table = None    # table for output
-        self.data = None     # init data
+        self.table = None       # table for output
+        self.data = None        # init data
 
-        self.rows = 0         # amount of rows
-        self.columns = 0      # amount of columns
+        self.rows = 0           # amount of rows
+        self.columns = 0        # amount of columns
 
         self.polyPow = 0
 
-    def readData(self, name: str):
+    def readData(self, name: str, type = "direct"):
 
         try:
             with open(name, "r") as file:
@@ -23,15 +24,17 @@ class Table:
         except:
             raise FileNotFoundError("No valid file!") from None
 
-        x = np.zeros(0)
-        y = np.zeros(0)
-        yDer = np.zeros(0)
+        x = np.array([])
+        y = np.array([])
+        yDer = np.array([])
         
         for point in points:
             try:
                 x = np.append(x, float(point.get("x")))      
-                y = np.append(y, float(point.get("y")))      
-                yDer = np.append(yDer, float(point.get("yDer")))       
+                y = np.append(y, float(point.get("y"))) 
+
+                if len(point) == 3:     
+                    yDer = np.append(yDer, float(point.get("yDer")))       
             except:
                 raise ValueError("Wrong data in input file!") from None
 
@@ -39,14 +42,24 @@ class Table:
         self.columns = 3
 
         self.data = np.zeros((self.rows, self.columns))
+        self.dataReverse = np.zeros((self.rows, self.columns))
 
-        self.data[:, 0] = x
-        self.data[:, 1] = y
-        self.data[:, 2] = yDer
+        if type == "direct":
+            self.data[:, 0] = x
+            self.data[:, 1] = y
+
+            if len(yDer) != 0:
+                self.data[:, 2] = yDer
+        else:
+            self.data[:, 1] = x
+            self.data[:, 0] = y
+
+            if len(yDer) != 0:
+                self.data[:, 2] = 1 / yDer
+
+        self.data = self.data[self.data[:, 0].argsort(kind = "meregesort")]
 
     def makeConfiguration(self, xValue, polyPow):
-        
-        index = 0
 
         if not (np.amin(self.data[:, 0]) <= xValue <= np.amax(self.data[:, 0])):
             raise ValueError("Extrapolation is forbidden!") from None
@@ -55,6 +68,7 @@ class Table:
             raise ValueError("Wrong value for polynom's power!") from None
 
         self.polyPow = polyPow
+        index = 0
 
         for i in range(1, self.rows):
             if self.data[i - 1, 0] <= xValue <= self.data[i, 0]: 
@@ -91,6 +105,25 @@ class Table:
 
         self.rows *= 2
 
+    def makeNewTable(self, table):
+
+        newY = []
+
+        for i in range(self.rows):
+            newY.append(ca.getPolyValue(self, table.data[i, 0], False))
+
+        return newY
+
+
+    def addDifferences(self, column):
+
+        for i in range(self.rows):
+            self.data[i, 1] -= column[i]
+
+            temp = self.data[i, 1]
+            self.data[i, 1] = self.data[i, 0]
+            self.data[i, 0] = temp
+
     @staticmethod
     def formatStr(value):
         return "{:.3f}".format(value)
@@ -115,5 +148,3 @@ class Table:
 
         print(method)
         print(self.table)
-
-
