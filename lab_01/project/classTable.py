@@ -98,6 +98,17 @@ class Table:
 
         self.rows = self.polyPow + 1
 
+        increase = 0
+        decrease = 0
+        for i in range(0, self.rows - 1):
+            if self.data[i, 1] < self.data[i + 1, 1]:
+                increase += 1
+            if self.data[i, 1] > self.data[i + 1, 1]:
+                decrease += 1
+
+        if not (increase == self.rows - 1 or decrease == self.rows - 1):
+            raise ValueError("Your function isn't monotonous!")
+
     def duplicateConfiguration(self):
 
         for i in range(0, self.rows * 2, 2):

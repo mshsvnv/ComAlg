@@ -1,9 +1,9 @@
 import calcAlg as ca
 from classTable import Table
 
-def inputData():
+def inputData(xText: str):
 
-    xValue = input("\nInput x: ")
+    xValue = input("\nInput {}: ".format(xText))
 
     try:
         xValue = float(xValue)
@@ -19,8 +19,31 @@ def inputData():
  
     return xValue, polyPow
 
-if __name__ == "__main__":
+def printMenu():
 
+    actions = ["1. Direct interpolation",
+               "2. Reverse interpolation",
+               "3. Solve SOLE",
+               "4. Exit"]
+    
+    print("\n\t::Menu::\n")
+
+    for act in actions:
+        print(act)
+    
+    act = input("\nAct: ")
+
+    try:
+        act = int(act)
+    except:
+        ValueError("Wrong value for act!")
+
+    if not (1 <= act <= 4):
+        ValueError("Wrong value for act!")
+
+    return act
+
+def directInterpolation():
     NewtonTable = Table("Newton")                       # прямая интерполяция
     HermitTable = Table("Hermit")
 
@@ -29,7 +52,7 @@ if __name__ == "__main__":
 
     NewtonTable.printData("\nInit table: ")
 
-    xValue, polyPow = inputData()
+    xValue, polyPow = inputData("X")
 
     NewtonTable.makeConfiguration(xValue, polyPow)
     ca.calculateDividedDiffNewton(NewtonTable)
@@ -44,13 +67,15 @@ if __name__ == "__main__":
     ca.getPolyValue(NewtonTable, xValue, True)
     ca.getPolyValue(HermitTable, xValue, True)
 
+def reverseInterpolation():
+
     NewtonTableReverse = Table("Newton")                # обратная интерполяция
     HermitTableReverse = Table("Hermit")
 
     NewtonTableReverse.readData("data/data.csv", "reverse")
     HermitTableReverse.readData("data/data.csv", "reverse")
 
-    xValue = 0
+    xValue, polyPow = inputData("Y")
 
     NewtonTableReverse.makeConfiguration(xValue, polyPow)
     ca.calculateDividedDiffNewton(NewtonTableReverse)
@@ -65,6 +90,7 @@ if __name__ == "__main__":
     ca.getPolyValue(NewtonTableReverse, xValue, True, "reverse")
     ca.getPolyValue(HermitTableReverse, xValue, True, "reverse")
 
+def  solveSOLE():
     tableFirst = Table("Tabel_1")                       # решение СЛАУ Ньютоном
     tableFirst.readData("data/data_1.csv")
     tableFirst.printData("\nx(y)")
@@ -72,6 +98,8 @@ if __name__ == "__main__":
     tableSecond = Table("Table_2")
     tableSecond.readData("data/data_2.csv")
     tableSecond.printData("\ny(x)")
+    
+    xValue, polyPow = inputData("Y")
 
     tableFirst.makeConfiguration(tableFirst.data[tableFirst.rows // 2, 0], tableFirst.rows - 1)
     ca.calculateDividedDiffNewton(tableFirst)
@@ -89,5 +117,16 @@ if __name__ == "__main__":
     xValue = ca.getPolyValue(tableSecond, xValue, True, "reverse")
     ca.getPolyValue(tableFirst, xValue, True)
 
+if __name__ == "__main__":
 
+    while True:
+        act = printMenu()
 
+        if act == 1:
+            directInterpolation()
+        elif act == 2:
+            reverseInterpolation()
+        elif act == 3:
+            solveSOLE()
+        else:
+            break
