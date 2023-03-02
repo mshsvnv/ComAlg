@@ -48,12 +48,13 @@ def NewtonInterpolation(xValue):
 
     print("\nNewton: {:.6f}".format(yValue))
 
-initTable = Table()
-initTable.readData("./data/data.csv")
-Table.printData(initTable.data, "init")
+if __name__ == "__main__":
+    initTable = Table()
+    initTable.readData("./data/data.csv")
+    Table.printData(initTable.data, "init")
 
-xValue = inputData()
+    xValue = inputData()
 
-NewtonInterpolation(xValue)
-splineInterpolation(xValue)
+    NewtonInterpolation(xValue)
+    splineInterpolation(xValue)
 
