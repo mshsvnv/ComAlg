@@ -1,0 +1,48 @@
+from Table import Table
+import numpy as np
+import matplotlib.pyplot as plt
+
+def calculateDividedDiffNewton(myTable: Table):  # divided differences for Newton Polynom
+
+    myTable.columns = myTable.polyPow + 2
+
+    myTable.data[:, -1] = 0
+
+    for j in range(myTable.polyPow - 1):
+        myTable.data = np.append(myTable.data, np.zeros((myTable.rows, 1)), axis = 1)
+
+    for j in range(myTable.polyPow):
+        for i in range(myTable.columns - j - 2):
+            myTable.data[i, j + 2] = (myTable.data[i, j + 1] - myTable.data[i + 1, j + 1]) / (myTable.data[i, 0] - myTable.data[j + i + 1, 0])
+
+def getPolyValue(myTable, xValue):
+
+    yValue = myTable.data[0, -1]
+
+    for i in range(1, myTable.columns - 1): 
+        yValue = myTable.data[0, myTable.columns - i - 1] + (xValue - myTable.data[myTable.rows - i - 1, 0]) * yValue
+    return yValue
+
+def calculateSplineKoefs(myTable):
+
+    myTable.data[:, 2] = myTable.data[:,1] # a column
+
+    myTable.data[:, 3] # b column
+    myTable.data[:, 4] # c column
+    myTable.data[:, 5] # d column
+
+def getB():
+    pass
+
+def getC(myTable):
+
+    ksi = [0, 0]
+    tetta = [0, 0]
+
+    for i in range(2, myTable.rows):
+        h_1 = myTable.data[i, 0] - myTable.data[i - 1, 0]
+        h_2 = myTable.data[i - 1, 0] - myTable.data[i - 2, 0]
+
+def getD():
+    pass
+

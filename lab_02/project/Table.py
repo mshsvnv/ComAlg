@@ -1,12 +1,10 @@
 import csv 
 import numpy as np
 import prettytable as pt
-import calcAlg as ca
+
 class Table:
 
-    def __init__(self, method: str):
-
-        self.method = method
+    def __init__(self):
 
         self.table = None       # table for output
         self.data = None        # init data
@@ -16,7 +14,7 @@ class Table:
 
         self.polyPow = 0
 
-    def readData(self, name: str, type = "direct"):
+    def readData(self, name: str):
 
         try:
             with open(name, "r") as file:
@@ -26,36 +24,21 @@ class Table:
 
         x = np.array([])
         y = np.array([])
-        yDer = np.array([])
         
         for point in points:
             try:
                 x = np.append(x, float(point.get("x")))      
-                y = np.append(y, float(point.get("y"))) 
-
-                if len(point) == 3:     
-                    yDer = np.append(yDer, float(point.get("yDer")))       
+                y = np.append(y, float(point.get("y")))    
             except:
                 raise ValueError("Wrong data in input file!") from None
 
         self.rows = x.size
-        self.columns = 3
+        self.columns = 2
 
         self.data = np.zeros((self.rows, self.columns))
-        self.dataReverse = np.zeros((self.rows, self.columns))
 
-        if type == "direct":
-            self.data[:, 0] = x
-            self.data[:, 1] = y
-
-            if len(yDer) != 0:
-                self.data[:, 2] = yDer
-        else:
-            self.data[:, 1] = x
-            self.data[:, 0] = y
-
-            if len(yDer) != 0:
-                self.data[:, 2] = 1 / yDer
+        self.data[:, 0] = x
+        self.data[:, 1] = y
 
         self.data = self.data[self.data[:, 0].argsort(kind = "meregesort")]
 
@@ -63,10 +46,7 @@ class Table:
 
         if not (np.amin(self.data[:, 0]) <= xValue <= np.amax(self.data[:, 0])):
             raise ValueError("Extrapolation is forbidden!") from None
-
-        # if not (1 <= polyPow <= self.rows - 1):
-        #     raise ValueError("Wrong value for polynom's power!") from None
-
+        
         self.polyPow = polyPow
         index = 0
 
@@ -108,71 +88,24 @@ class Table:
 
         if not (increase == self.rows - 1 or decrease == self.rows - 1):
             raise ValueError("Your function isn't monotonous!")
-
-    def duplicateConfiguration(self):
-
-        for i in range(0, self.rows * 2, 2):
-            self.data = np.insert(self.data, i + 1, self.data[i], 0)
-
-        self.rows *= 2
-
-    def makeNewTable(self, table):
-
-        newY = []
-
-        for i in range(self.rows):
-            newY.append(ca.getPolyValue(self, table.data[i, 0]))
-
-        return newY
-
-
-    def addDifferences(self, column):
-
-        for i in range(self.rows):
-            self.data[i, 1] -= column[i]
-
-            temp = self.data[i, 1]
-            self.data[i, 1] = self.data[i, 0]
-            self.data[i, 0] = temp
-
+        
     @staticmethod
     def formatStr(value):
         return "{:.6f}".format(value)
 
     @staticmethod
-    def printData(data, type = "direct"):
+    def printData(data, type = "init"):
         
         table = pt.PrettyTable()
 
-        if type == "system":
-            fieldNames = ["Polynom power", "X", "Y"]
+        if type == "init":
+            fieldNames = ["№", "X", "Y"]
         else:
-            fieldNames = ["Polynom power", "Newton", "Hermit"]
+            pass
 
         table.field_names = fieldNames
 
-        for i in range(5):
+        for i in range(len(data)):
             table.add_row([str(i + 1)] + list(map(Table.formatStr, data[i])))
 
         print(table)
-
-    def printTable(self, method: str):
-
-        self.table = pt.PrettyTable()
-
-        filedNames = ["№"]
-        for i in range(self.columns):
-            if i == 0:
-                filedNames.append("X")
-            elif i == 1:
-                filedNames.append("Y")
-            else:
-                filedNames.append("Y" + '\'' * (i - 1))
-
-        self.table.field_names = filedNames
-
-        for i in range(self.rows):
-            self.table.add_row([str(i + 1)] + list(map(Table.formatStr, self.data[i])))
-
-        print(method)
-        print(self.table)
