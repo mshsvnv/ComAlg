@@ -1,132 +1,192 @@
 import calcAlg as ca
 from classTable import Table
 
-def inputData(xText: str):
+def inputData():
 
-    xValue = input("\nInput {}: ".format(xText))
+    xValue = input("\nInput X: ")
 
     try:
         xValue = float(xValue)
     except:
         raise ValueError("Wrong type of value!") from None
-
-    polyPow = input("\nInput polynom's power: ")
-
-    try:
-        polyPow = int(polyPow)
-    except:
-        raise ValueError("Wrong type of power!") from None
- 
-    return xValue, polyPow
-
-def printMenu():
-
-    actions = ["1. Direct interpolation",
-               "2. Reverse interpolation",
-               "3. Solve SOLE",
-               "4. Exit"]
     
-    print("\n\t::Menu::\n")
-
-    for act in actions:
-        print(act)
-    
-    act = input("\nAct: ")
-
-    try:
-        act = int(act)
-    except:
-        ValueError("Wrong value for act!")
-
-    if not (1 <= act <= 4):
-        ValueError("Wrong value for act!")
-
-    return act
+    return xValue
 
 def directInterpolation():
-    NewtonTable = Table("Newton")                       # прямая интерполяция
-    HermitTable = Table("Hermit")
 
-    NewtonTable.readData("data/data.csv")
-    HermitTable.readData("data/data.csv")
+    print("\nDirect interpolation:\n")
 
-    NewtonTable.printData("\nInit table: ")
+    dataAll = list()
+    xValue = None
 
-    xValue, polyPow = inputData("X")
+    for i in range(5):
 
-    NewtonTable.makeConfiguration(xValue, polyPow)
-    ca.calculateDividedDiffNewton(NewtonTable)
+        polyPow = i + 1
+        NewtonTable = Table("Newton")                       
+        HermitTable = Table("Hermit")
 
-    HermitTable.makeConfiguration(xValue, polyPow)
-    HermitTable.duplicateConfiguration()
-    ca.calculateDividedDiffHermit(HermitTable)
+        NewtonTable.readData("data/data.csv")
+        HermitTable.readData("data/data.csv")
 
-    NewtonTable.printData("\nNewton's method:")
-    HermitTable.printData("\nHermit's method:")
+        if i == 0:
+            NewtonTable.printTable("Initial Table")
+            xValue =  inputData()
 
-    ca.getPolyValue(NewtonTable, xValue, True)
-    ca.getPolyValue(HermitTable, xValue, True)
+        NewtonTable.makeConfiguration(xValue, polyPow)
+        ca.calculateDividedDiffNewton(NewtonTable)
+
+        HermitTable.makeConfiguration(xValue, polyPow)
+        HermitTable.duplicateConfiguration()
+        ca.calculateDividedDiffHermit(HermitTable)
+
+        yValueNewton = ca.getPolyValue(NewtonTable, xValue)
+        yValueHermit = ca.getPolyValue(HermitTable, xValue)
+
+        dataAll.append([yValueNewton, yValueHermit])
+    
+    print("X: {:.3f}".format(xValue))
+    Table.printData(dataAll)
+
+    # NewtonTable = Table("Newton")                       
+    # HermitTable = Table("Hermit")
+
+    # NewtonTable.readData("data/data.csv")
+    # HermitTable.readData("data/data.csv")
+
+    # NewtonTable.printData("\nInit table: ")
+
+    # xValue, polyPow = inputData("X")
+
+    # NewtonTable.makeConfiguration(xValue, polyPow)
+    # ca.calculateDividedDiffNewton(NewtonTable)
+
+    # HermitTable.makeConfiguration(xValue, polyPow)
+    # HermitTable.duplicateConfiguration()
+    # ca.calculateDividedDiffHermit(HermitTable)
+
+    # NewtonTable.printData("\nNewton's method:")
+    # HermitTable.printData("\nHermit's method:")
+
+    # ca.getPolyValue(NewtonTable, xValue, True)
+    # ca.getPolyValue(HermitTable, xValue, True)
 
 def reverseInterpolation():
 
-    NewtonTableReverse = Table("Newton")                # обратная интерполяция
-    HermitTableReverse = Table("Hermit")
+    print("\nReverse interpolation:\n")
 
-    NewtonTableReverse.readData("data/data.csv", "reverse")
-    HermitTableReverse.readData("data/data.csv", "reverse")
+    dataAll = list()
+    xValue = 0
 
-    xValue, polyPow = inputData("Y")
+    for i in range(5):
+        polyPow = i + 1
+        NewtonTable = Table("Newton")                       
+        HermitTable = Table("Hermit")
 
-    NewtonTableReverse.makeConfiguration(xValue, polyPow)
-    ca.calculateDividedDiffNewton(NewtonTableReverse)
+        NewtonTable.readData("data/data.csv", "reverse")
+        HermitTable.readData("data/data.csv", "reverse")
 
-    HermitTableReverse.makeConfiguration(xValue, polyPow)
-    HermitTableReverse.duplicateConfiguration()
-    ca.calculateDividedDiffHermit(HermitTableReverse)
+        NewtonTable.makeConfiguration(xValue, polyPow)
+        ca.calculateDividedDiffNewton(NewtonTable)
 
-    NewtonTableReverse.printData("\nNewton's method:")
-    HermitTableReverse.printData("\nHermit's method:")
+        HermitTable.makeConfiguration(xValue, polyPow)
+        HermitTable.duplicateConfiguration()
+        ca.calculateDividedDiffHermit(HermitTable)
 
-    ca.getPolyValue(NewtonTableReverse, xValue, True, "reverse")
-    ca.getPolyValue(HermitTableReverse, xValue, True, "reverse")
+        yValueNewton = ca.getPolyValue(NewtonTable, xValue)
+        yValueHermit = ca.getPolyValue(HermitTable, xValue)
 
-def  solveSOLE():
-    tableFirst = Table("Tabel_1")                       # решение СЛАУ Ньютоном
-    tableFirst.readData("data/data_1.csv")
-    tableFirst.printData("\nx(y)")
-
-    tableSecond = Table("Table_2")
-    tableSecond.readData("data/data_2.csv")
-    tableSecond.printData("\ny(x)")
+        dataAll.append([yValueNewton, yValueHermit] )
     
-    xValue, polyPow = inputData("Y")
+    print("Y: {:.3f}".format(xValue))
+    Table.printData(dataAll, "reverse")
 
-    tableFirst.makeConfiguration(tableFirst.data[tableFirst.rows // 2, 0], tableFirst.rows - 1)
-    ca.calculateDividedDiffNewton(tableFirst)
+    # NewtonTableReverse = Table("Newton")                
+    # HermitTableReverse = Table("Hermit")
+
+    # NewtonTableReverse.readData("data/data.csv", "reverse")
+    # HermitTableReverse.readData("data/data.csv", "reverse")
+
+    # xValue, polyPow = inputData("Y", False)
+
+    # NewtonTableReverse.makeConfiguration(xValue, polyPow)
+    # ca.calculateDividedDiffNewton(NewtonTableReverse)
+
+    # HermitTableReverse.makeConfiguration(xValue, polyPow)
+    # HermitTableReverse.duplicateConfiguration()
+    # ca.calculateDividedDiffHermit(HermitTableReverse)
+
+    # NewtonTableReverse.printData("\nNewton's method:")
+    # HermitTableReverse.printData("\nHermit's method:")
+
+    # ca.getPolyValue(NewtonTableReverse, xValue, True, "reverse")
+    # ca.getPolyValue(HermitTableReverse, xValue, True, "reverse")
+
+def solveSystem():
+
+    print("\nSystem solution:\n")
+
+    dataAll = list()
+
+    for i in range(5):
+
+        polyPow = i + 1
+        xValue = 0
+
+        tableFirst = Table("Tabel_1")                      
+        tableFirst.readData("data/data_1.csv")
+
+        tableSecond = Table("Table_2")
+        tableSecond.readData("data/data_2.csv")
+
+        tableFirst.makeConfiguration(tableFirst.data[tableFirst.rows // 2, 0], tableFirst.rows - 1)
+        ca.calculateDividedDiffNewton(tableFirst)
+        
+        newY = tableFirst.makeNewTable(tableSecond)
+        tableSecond.addDifferences(newY)
+
+        # tableSecond.printData("\nNew Table")
+
+        tableSecond.makeConfiguration(xValue, polyPow)
+        ca.calculateDividedDiffNewton(tableSecond)
+
+        # print("\nAnswer for System:")
+        
+        xValue = ca.getPolyValue(tableSecond, xValue)
+        yValue = ca.getPolyValue(tableFirst, xValue)
+
+        dataAll.append([xValue, yValue])
+
+    Table.printData(dataAll, "system")
+
+    # tableFirst = Table("Tabel_1")                      
+    # tableFirst.readData("data/data_1.csv")
+    # tableFirst.printData("\nx(y)")
+
+    # tableSecond = Table("Table_2")
+    # tableSecond.readData("data/data_2.csv")
+    # tableSecond.printData("\ny(x)")
     
-    newY = tableFirst.makeNewTable(tableSecond)
-    tableSecond.addDifferences(newY)
+    # xValue, polyPow = inputData("Y", False)
 
-    tableSecond.printData("\nNew Table")
-
-    tableSecond.makeConfiguration(xValue, polyPow)
-    ca.calculateDividedDiffNewton(tableSecond)
-
-    print("\nAnswer for SOLE:")
+    # tableFirst.makeConfiguration(tableFirst.data[tableFirst.rows // 2, 0], tableFirst.rows - 1)
+    # ca.calculateDividedDiffNewton(tableFirst)
     
-    xValue = ca.getPolyValue(tableSecond, xValue, True, "reverse")
-    ca.getPolyValue(tableFirst, xValue, True)
+    # newY = tableFirst.makeNewTable(tableSecond)
+    # tableSecond.addDifferences(newY)
+
+    # tableSecond.printData("\nNew Table")
+
+    # tableSecond.makeConfiguration(xValue, polyPow)
+    # ca.calculateDividedDiffNewton(tableSecond)
+
+    # print("\nAnswer for System:")
+    
+    # xValue = ca.getPolyValue(tableSecond, xValue, True, "reverse")
+    # ca.getPolyValue(tableFirst, xValue, True)
 
 if __name__ == "__main__":
+    directInterpolation()
 
-    while True:
-        act = printMenu()
+    reverseInterpolation()
 
-        if act == 1:
-            directInterpolation()
-        elif act == 2:
-            reverseInterpolation()
-        elif act == 3:
-            solveSOLE()
-        else:
-            break
+    solveSystem()

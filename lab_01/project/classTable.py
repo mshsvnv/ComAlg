@@ -64,8 +64,8 @@ class Table:
         if not (np.amin(self.data[:, 0]) <= xValue <= np.amax(self.data[:, 0])):
             raise ValueError("Extrapolation is forbidden!") from None
 
-        if not (1 <= polyPow <= self.rows - 1):
-            raise ValueError("Wrong value for polynom's power!") from None
+        # if not (1 <= polyPow <= self.rows - 1):
+        #     raise ValueError("Wrong value for polynom's power!") from None
 
         self.polyPow = polyPow
         index = 0
@@ -121,7 +121,7 @@ class Table:
         newY = []
 
         for i in range(self.rows):
-            newY.append(ca.getPolyValue(self, table.data[i, 0], False))
+            newY.append(ca.getPolyValue(self, table.data[i, 0]))
 
         return newY
 
@@ -137,9 +137,26 @@ class Table:
 
     @staticmethod
     def formatStr(value):
-        return "{:.3f}".format(value)
+        return "{:.6f}".format(value)
 
-    def printData(self, method: str):
+    @staticmethod
+    def printData(data, type = "direct"):
+        
+        table = pt.PrettyTable()
+
+        if type == "system":
+            fieldNames = ["№", "X", "Y"]
+        else:
+            fieldNames = ["№", "Newton", "Hermit"]
+
+        table.field_names = fieldNames
+
+        for i in range(5):
+            table.add_row([str(i + 1)] + list(map(Table.formatStr, data[i])))
+
+        print(table)
+
+    def printTable(self, method: str):
 
         self.table = pt.PrettyTable()
 
