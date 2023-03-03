@@ -50,22 +50,41 @@ class Table:
 
             if len(yDer) != 0:
                 self.data[:, 2] = yDer
+
+            # self.data = self.data[self.data[:, 0].argsort(kind = "meregesort")]
         else:
             self.data[:, 1] = x
             self.data[:, 0] = y
 
             if len(yDer) != 0:
-                self.data[:, 2] = 1 / yDer
+                for i in range(self.rows):
+                    if yDer[i] != 0:
+                        self.data[i, 2] = 1 / yDer[i]
+                    else:
+                        self.data[i, 2] = 1 / (10 ** 8)
 
         self.data = self.data[self.data[:, 0].argsort(kind = "meregesort")]
 
-    def makeConfiguration(self, xValue, polyPow):
+    def getDifferences(self):
+        
+        diff = list()
+
+        for i in range(1, self.rows):
+            diff.append(self.data[i - 1, 1] - self.data[i, 1])
+
+        for i in range(1, len(diff)):
+            if diff[i] * diff[i - 1] < 0:
+                return i
+
+        return 0
+
+    def makeConfiguration(self, xValue, polyPow, method = "Newton"):
 
         if not (np.amin(self.data[:, 0]) <= xValue <= np.amax(self.data[:, 0])):
             raise ValueError("Extrapolation is forbidden!") from None
-
-        # if not (1 <= polyPow <= self.rows - 1):
-        #     raise ValueError("Wrong value for polynom's power!") from None
+        
+        # self.data = np.delete(self.data, 0, axis = 0)
+        # self.rows -= 1
 
         self.polyPow = polyPow
         index = 0
@@ -78,17 +97,35 @@ class Table:
         i = 0
         beg, end = index, index
 
+        point = self.getDifferences()
+        print(point)
+
+        # TODO сделать массив разностей, получить индексы монотонности, найти наиболее подходящий отрезок
+            
         while (i != polyPow):
-            if beg != 0:
-                beg -= 1
-                i += 1
+        
+            if point <= self.rows // 2:
+                if beg != point:
+                    i += 1
+                    beg -= 1
 
-            if (i == polyPow):
-                break
+                if (i == polyPow):
+                    break
+                
+                if end != self.rows - 1:
+                    end += 1
+                    i += 1
+            else:
+                if beg != 0:
+                    i += 1
+                    beg -= 1
 
-            if end != self.rows - 1:
-                end += 1
-                i += 1
+                if (i == polyPow):
+                    break
+                
+                if end != point:
+                    end += 1
+                    i += 1
 
         for i in range(beg):
             self.data = np.delete(self.data, 0, axis = 0)
@@ -96,18 +133,9 @@ class Table:
         for i in range(end + 1, self.rows):
             self.data = np.delete(self.data, -1, axis = 0)
 
+        print(self.data)
+
         self.rows = self.polyPow + 1
-
-        increase = 0
-        decrease = 0
-        for i in range(0, self.rows - 1):
-            if self.data[i, 1] < self.data[i + 1, 1]:
-                increase += 1
-            if self.data[i, 1] > self.data[i + 1, 1]:
-                decrease += 1
-
-        if not (increase == self.rows - 1 or decrease == self.rows - 1):
-            raise ValueError("Your function isn't monotonous!")
 
     def duplicateConfiguration(self):
 
@@ -140,7 +168,7 @@ class Table:
         return "{:.6f}".format(value)
 
     @staticmethod
-    def printData(data, type = "direct"):
+    def printData(data, len_n = int, type = "direct"):
         
         table = pt.PrettyTable()
 
@@ -151,12 +179,12 @@ class Table:
 
         table.field_names = fieldNames
 
-        for i in range(5):
+        for i in range(len_n):
             table.add_row([str(i + 1)] + list(map(Table.formatStr, data[i])))
 
         print(table)
 
-    def printTable(self, method: str):
+    def printTable(self, method = "kek"):
 
         self.table = pt.PrettyTable()
 
