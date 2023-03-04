@@ -2,6 +2,7 @@ import csv
 import numpy as np
 import prettytable as pt
 import calcAlg as ca
+from matplotlib import pyplot as plt
 class Table:
 
     def __init__(self, method: str):
@@ -15,7 +16,8 @@ class Table:
         self.columns = 0        # amount of columns
 
         self.polyPow = 0
-
+        self.kind = None
+        
     def readData(self, name: str, type = "direct"):
 
         try:
@@ -51,7 +53,9 @@ class Table:
             if len(yDer) != 0:
                 self.data[:, 2] = yDer
 
-            # self.data = self.data[self.data[:, 0].argsort(kind = "meregesort")]
+            self.data = self.data[self.data[:, 0].argsort(kind = "mergesort")]
+
+            self.checkMonotonous(1)
         else:
             self.data[:, 1] = x
             self.data[:, 0] = y
@@ -61,30 +65,64 @@ class Table:
                     if yDer[i] != 0:
                         self.data[i, 2] = 1 / yDer[i]
                     else:
-                        self.data[i, 2] = 1 / (10 ** 8)
+                        self.data[i, 2] = 10 ** 7
 
-        self.data = self.data[self.data[:, 0].argsort(kind = "meregesort")]
+            self.data = self.data[self.data[:, 1].argsort(kind = "mergesort")]
 
-    def getDifferences(self):
+            self.checkMonotonous(0)
+
+    def checkMonotonous(self, column):
         
-        diff = list()
+        increase = 1
+        decrease = 1
 
         for i in range(1, self.rows):
-            diff.append(self.data[i - 1, 1] - self.data[i, 1])
+            if self.data[i - 1, column] <= self.data[i, column]:
+                increase += 1
+            elif self.data[i - 1, column] > self.data[i, column]:
+                decrease += 1
 
-        for i in range(1, len(diff)):
-            if diff[i] * diff[i - 1] < 0:
-                return i
+        if self.rows == increase:
+            self.kind = "increase"
+        elif self.rows == decrease:
+            self.kind = "decrease"
+        else:
+            self.kind = "nonmonotonous"
 
-        return 0
-
-    def makeConfiguration(self, xValue, polyPow, method = "Newton"):
+    def makeConfiguration(self, xValue, polyPow, column = 1):
 
         if not (np.amin(self.data[:, 0]) <= xValue <= np.amax(self.data[:, 0])):
             raise ValueError("Extrapolation is forbidden!") from None
         
-        # self.data = np.delete(self.data, 0, axis = 0)
-        # self.rows -= 1
+        if self.kind == "nonmonotonous":
+            indexes = [0]
+
+            beg = 0
+            end = 0
+
+            for i in range(1, self.rows - 1):
+                if self.data[i - 1, column] < self.data[i, column] > self.data[i + 1, column]:
+                    indexes.append(i)
+                if self.data[i - 1, column] > self.data[i, column] < self.data[i + 1, column]:
+                    indexes.append(i)
+            indexes.append(self.rows - 1)
+
+            for i in range(1, len(indexes)):
+                if self.data[indexes[i - 1], 0] <= xValue <= self.data[indexes[i], 0]:
+                    beg = indexes[i - 1]
+                    end = indexes[i]
+
+                    if end - beg + 1 > 2:
+                        break
+
+            if len(indexes) != 2:
+                for i in range(beg):
+                    self.data = np.delete(self.data, 0, axis = 0)
+                    self.rows -= 1
+
+                for i in range(self.rows, end, -1):
+                    self.data = np.delete(self.data, -1, axis = 0)
+                    self.rows -= 1
 
         self.polyPow = polyPow
         index = 0
@@ -97,43 +135,23 @@ class Table:
         i = 0
         beg, end = index, index
 
-        point = self.getDifferences()
-        print(point)
-
-        # TODO сделать массив разностей, получить индексы монотонности, найти наиболее подходящий отрезок
-            
         while (i != polyPow):
-        
-            if point <= self.rows // 2:
-                if beg != point:
-                    i += 1
-                    beg -= 1
+            if beg != 0:
+                i += 1
+                beg -= 1
 
-                if (i == polyPow):
-                    break
-                
-                if end != self.rows - 1:
-                    end += 1
-                    i += 1
-            else:
-                if beg != 0:
-                    i += 1
-                    beg -= 1
-
-                if (i == polyPow):
-                    break
-                
-                if end != point:
-                    end += 1
-                    i += 1
+            if (i == polyPow):
+                break
+            
+            if end != self.rows - 1:
+                end += 1
+                i += 1
 
         for i in range(beg):
             self.data = np.delete(self.data, 0, axis = 0)
 
         for i in range(end + 1, self.rows):
             self.data = np.delete(self.data, -1, axis = 0)
-
-        print(self.data)
 
         self.rows = self.polyPow + 1
 
@@ -168,18 +186,18 @@ class Table:
         return "{:.6f}".format(value)
 
     @staticmethod
-    def printData(data, len_n = int, type = "direct"):
+    def printData(data, kind = "direct"):
         
         table = pt.PrettyTable()
 
-        if type == "system":
+        if kind == "system":
             fieldNames = ["Polynom power", "X", "Y"]
         else:
             fieldNames = ["Polynom power", "Newton", "Hermit"]
 
         table.field_names = fieldNames
 
-        for i in range(len_n):
+        for i in range(len(data)):
             table.add_row([str(i + 1)] + list(map(Table.formatStr, data[i])))
 
         print(table)
@@ -204,3 +222,8 @@ class Table:
 
         print(method)
         print(self.table)
+
+    def drawGraph(self):
+        plt.plot(self.data[:, 0], self.data[:, 1])
+
+        plt.show()

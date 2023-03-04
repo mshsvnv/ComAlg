@@ -18,11 +18,8 @@ def directInterpolation():
 
     dataAll = list()
     xValue = None
-    len_n = 0
 
     for i in range(3):
-
-        len_n = i + 1
 
         polyPow = i + 1
         NewtonTable = Table("Newton")                       
@@ -31,21 +28,17 @@ def directInterpolation():
         NewtonTable.readData("data/data_new.csv")
         HermitTable.readData("data/data_new.csv")
 
-        # if i + 1 == NewtonTable.rows:
-        #     break
-
         if i == 0:
             NewtonTable.printTable("Initial Table")
             xValue =  inputData()
+            NewtonTable.drawGraph()
 
-        NewtonTable.makeConfiguration(xValue, polyPow)
+        NewtonTable.makeConfiguration(xValue, polyPow, 1)
         ca.calculateDividedDiffNewton(NewtonTable)
-        # NewtonTable.printTable()
 
-        HermitTable.makeConfiguration(xValue, polyPow)
+        HermitTable.makeConfiguration(xValue, polyPow, 1)
         HermitTable.duplicateConfiguration()
         ca.calculateDividedDiffHermit(HermitTable)
-        # HermitTable.printTable()
 
         yValueNewton = ca.getPolyValue(NewtonTable, xValue)
         yValueHermit = ca.getPolyValue(HermitTable, xValue)
@@ -53,8 +46,7 @@ def directInterpolation():
         dataAll.append([yValueNewton, yValueHermit])
     
     print("X: {:.3f}".format(xValue))
-    len_n = int(len_n)
-    Table.printData(dataAll, len_n)
+    Table.printData(dataAll)
 
 def reverseInterpolation():
 
@@ -62,10 +54,8 @@ def reverseInterpolation():
 
     dataAll = list()
     xValue = 0
-    len_n = 0
 
     for i in range(3):
-        len_n = i + 1
 
         polyPow = i + 1
         NewtonTable = Table("Newton")                       
@@ -74,33 +64,26 @@ def reverseInterpolation():
         NewtonTable.readData("data/data_new.csv", "reverse")
         HermitTable.readData("data/data_new.csv", "reverse")
 
-        # if i + 1 == NewtonTable.rows:
-        #     break
-
-        NewtonTable.makeConfiguration(xValue, polyPow)
+        NewtonTable.makeConfiguration(xValue, polyPow, 0)
         ca.calculateDividedDiffNewton(NewtonTable)
-        # NewtonTable.printTable()
 
-        HermitTable.makeConfiguration(xValue, polyPow, "HermitR")
+        HermitTable.makeConfiguration(xValue, polyPow, 0)
         HermitTable.duplicateConfiguration()
         ca.calculateDividedDiffHermit(HermitTable)
-        # HermitTable.printTable()
 
         yValueNewton = ca.getPolyValue(NewtonTable, xValue)
         yValueHermit = ca.getPolyValue(HermitTable, xValue)
-
+        
         dataAll.append([yValueNewton, yValueHermit] )
     
     print("Y: {:.3f}".format(xValue))
-    len_n = int(len_n)
-    Table.printData(dataAll, len_n, "reverse")
+    Table.printData(dataAll)
 
 def solveSystem():
 
     print("\nSystem solution:\n")
 
     dataAll = list()
-    len_n = 0
 
     for i in range(5):
         len_n = i
@@ -123,24 +106,19 @@ def solveSystem():
         newY = tableFirst.makeNewTable(tableSecond)
         tableSecond.addDifferences(newY)
 
-        # tableSecond.printData("\nNew Table")
-
         tableSecond.makeConfiguration(xValue, polyPow)
         ca.calculateDividedDiffNewton(tableSecond)
-
-        # print("\nAnswer for System:")
         
         xValue = ca.getPolyValue(tableSecond, xValue)
         yValue = ca.getPolyValue(tableFirst, xValue)
 
         dataAll.append([xValue, yValue])
 
-    len_n = int(len_n)
-    Table.printData(dataAll, 5, "system")
+    Table.printData(dataAll, "system")
 
 if __name__ == "__main__":
     directInterpolation()
 
     reverseInterpolation()
 
-    # solveSystem()
+    solveSystem()
