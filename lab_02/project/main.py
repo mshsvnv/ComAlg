@@ -1,6 +1,8 @@
 import calcAlg as ca
 from Table import Table
 
+fileName = "./data/data.csv"
+
 def inputData():
 
     xValue = input("\nInput X: ")
@@ -12,16 +14,16 @@ def inputData():
     
     return xValue
 
-def splineInterpolation(xValue):
+def splineInterpolation(xValue, repeats = 3):
 
     splineTable = Table()
-    splineTable.readData("./data/data.csv")
+    splineTable.readData(fileName)
 
     print("\nSpline:")
 
     beg, end = 0, 0
 
-    for i in range(3):
+    for i in range(repeats):
         if i == 1:
             beg = ca.getNewtonDerivative(0)
         elif i == 2:
@@ -40,7 +42,7 @@ def splineInterpolation(xValue):
 def NewtonInterpolation(xValue):
 
     NewtonTable = Table()
-    NewtonTable.readData("./data/data.csv")
+    NewtonTable.readData(fileName)
     NewtonTable.makeConfiguration(xValue, 3)
     ca.calculateDividedDiffNewton(NewtonTable)
 
@@ -50,11 +52,15 @@ def NewtonInterpolation(xValue):
 
 if __name__ == "__main__":
     initTable = Table()
-    initTable.readData("./data/data.csv")
+    initTable.readData(fileName)
     Table.printData(initTable.data, "init")
 
     xValue = inputData()
 
-    NewtonInterpolation(xValue)
-    splineInterpolation(xValue)
+    if initTable.rows <= 3:
+        splineInterpolation(xValue, 1)
+        print("Unable Newton Interpolation of 3rd power due to lack of points!")
+    else:
+        NewtonInterpolation(xValue)
+        splineInterpolation(xValue)
 

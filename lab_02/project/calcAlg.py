@@ -58,11 +58,11 @@ def getC(myTable, beg, end):
         xi = [0, 0]
         theta = [0, 0]
     elif end == 0:
-        xi = [beg / 2, 0]
-        theta = [beg / 2, 0]
+        xi = [beg, 0]
+        theta = [beg, 0]
     else:
-        xi = [beg / 2, end / 2]
-        theta = [beg / 2, end / 2]
+        xi = [beg, end]
+        theta = [beg, end]
 
     for i in range(2, myTable.rows):
         h_1 = myTable.data[i, 0] - myTable.data[i - 1, 0]
@@ -111,12 +111,7 @@ def getNewtonDerivative(number):
     calculateDividedDiffNewton(NewtonTable)
 
     def aprocFunc(xValue):
-        res = 0
-
-        for i in range(NewtonTable.columns):
-            res += NewtonTable.data[0, i] * xValue ** i
-        
-        return res
+        return getPolyValue(NewtonTable, xValue)
     
     yDerivative = derivative(aprocFunc, NewtonTable.data[number, 0], n = 2, dx = 1e-6)
 
