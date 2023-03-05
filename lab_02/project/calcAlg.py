@@ -13,6 +13,7 @@ def calculateDividedDiffNewton(myTable: Table):  # divided differences for Newto
         for i in range(myTable.columns - j - 2):
             myTable.data[i, j + 2] = (myTable.data[i, j + 1] - myTable.data[i + 1, j + 1]) / (myTable.data[i, 0] - myTable.data[j + i + 1, 0])
 
+    # print(myTable.data)
 def getPolyValue(myTable, xValue):
 
     yValue = myTable.data[0, -1]

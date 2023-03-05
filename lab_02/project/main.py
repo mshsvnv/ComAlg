@@ -28,6 +28,7 @@ def splineInterpolation(xValue, repeats = 3):
             beg = ca.getNewtonDerivative(0)
         elif i == 2:
             end = ca.getNewtonDerivative(-1)
+        # print(beg, end)
 
         ca.calculateSplineCoefs(splineTable, beg, end)
         yValue = ca.getSplineValue(splineTable, xValue)
