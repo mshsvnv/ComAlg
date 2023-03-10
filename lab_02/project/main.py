@@ -20,6 +20,7 @@ def splineInterpolation(xValue, repeats = 3):
     splineTable = Table()
     splineTable.readData(fileName)
 
+    splines = []
     print("\nSpline:")
 
     beg, end = 0, 0
@@ -41,6 +42,8 @@ def splineInterpolation(xValue, repeats = 3):
         else:
             print("\tP''(x0) and P''(xn): {}".format(yValue))
 
+    return splineTable
+
 def NewtonInterpolation(xValue):
 
     NewtonTable = Table()
@@ -51,6 +54,8 @@ def NewtonInterpolation(xValue):
     yValue = ca.getPolyValue(NewtonTable, xValue)
 
     print("\nNewton: {:.6f}".format(yValue))
+
+    return NewtonTable
 
 if __name__ == "__main__":
     initTable = Table()
@@ -66,6 +71,10 @@ if __name__ == "__main__":
         splineInterpolation(xValue, 1)
         print("Unable Newton Interpolation of 3rd power due to lack of points!")
     else:
-        NewtonInterpolation(xValue)
-        splineInterpolation(xValue)
+        Newton = NewtonInterpolation(xValue)
+        spline = splineInterpolation(xValue)
+
+        ca.drawGraph(Newton, spline)
+
+        
 

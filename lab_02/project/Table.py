@@ -1,7 +1,6 @@
 import csv 
 import numpy as np
 import prettytable as pt
-
 class Table:
 
     def __init__(self):

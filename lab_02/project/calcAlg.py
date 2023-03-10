@@ -1,6 +1,7 @@
 from Table import Table
 import numpy as np
 from scipy.misc import derivative
+from matplotlib import pyplot as plt
 
 def calculateDividedDiffNewton(myTable: Table):  # divided differences for Newton Polynom
 
@@ -55,6 +56,8 @@ def getC(myTable, beg, end):
     myTable.data[0, 4] = beg
     myTable.data[1, 4] = end
 
+    print(beg, end)
+
     if beg == 0 and end == 0:
         xi = [0, 0]
         theta = [0, 0]
@@ -66,15 +69,15 @@ def getC(myTable, beg, end):
         theta = [beg, end]
 
     for i in range(2, myTable.rows):
-        h_1 = myTable.data[i, 0] - myTable.data[i - 1, 0]
-        h_2 = myTable.data[i - 1, 0] - myTable.data[i - 2, 0]
+        h_2 = myTable.data[i, 0] - myTable.data[i - 1, 0]
+        h_1 = myTable.data[i - 1, 0] - myTable.data[i - 2, 0]
 
-        phi = 3 * ((myTable.data[i, 1] - myTable.data[i - 1, 1]) / h_1 -
-                  (myTable.data[i - 1, 1] - myTable.data[i - 2, 1]) / h_2)
+        phi = getPhi(myTable.data[i - 2, 1], myTable.data[i - 1, 1], myTable.data[i, 1], h_1, h_2)
         
-        xiCur = -h_1 / (h_2 * xi[i - 1] + 2 * (h_1 + h_2))
-        thetaCur = (phi - h_1 * theta[i - 1]) / (h_1 * xi[i - 1] + 2 * (h_1 + h_2))
+        xiCur = getXi(xi[i - 1], h_1, h_2)
 
+        thetaCur = getTheta(phi, theta[i - 1], xi[i - 1], h_1, h_2)
+        
         xi.append(xiCur)
         theta.append(thetaCur)
 
@@ -82,6 +85,20 @@ def getC(myTable, beg, end):
 
     for i in range(myTable.rows - 2, 0, -1):
         myTable.data[i - 1, 4] = xi[i] * myTable.data[i, 4] + theta[i]
+
+    myTable.data[-2, 4] = end
+
+    for i in range(myTable.rows):
+        print(i, myTable.data[i, 4])
+
+def getPhi(y1, y2, y3, h1, h2):
+    return 3 * ((y3 - y2) / h2 - (y2 - y1) / h1)
+
+def getXi(xi1, h1, h2):
+    return - h1 / (h2 * xi1 + 2 * (h2 + h1))
+
+def getTheta(phi, tetha, xi, h1, h2):
+    return (phi - h1 * tetha) / (h1 * xi + 2 * (h2 + h1))
 
 def getIndex(myTable, xValue):
 
@@ -118,6 +135,22 @@ def getNewtonDerivative(number):
 
     return yDerivative
 
+def drawGraph(Newton, spline):
 
-
+    xList = np.linspace(np.min(Newton.data[:, 0]), np.max(Newton.data[:, 0]))
+    yList = np.array([getPolyValue(Newton, x) for x in xList])
     
+    plt.plot(xList, yList, color='r', label = "Newton")
+
+    xList = np.linspace(np.min(spline.data[:, 0]), np.max(spline.data[:, 0]), 100)
+    yList = np.array([getSplineValue(spline, x) for x in xList])
+    
+    plt.plot(xList, yList, "blue", label = "Spline")
+
+    xList = spline.data[:, 0]
+    yList = np.array([getSplineValue(spline, x) for x in xList])
+    
+    plt.plot(xList, yList, "green", marker = ".")
+    
+    plt.legend()
+    plt.show()

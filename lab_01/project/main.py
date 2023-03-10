@@ -73,6 +73,8 @@ def reverseInterpolation():
         HermitTable.duplicateConfiguration()
         ca.calculateDividedDiffHermit(HermitTable)
 
+        NewtonTable.printTable()
+
         yValueNewton = ca.getPolyValue(NewtonTable, xValue)
         yValueHermit = ca.getPolyValue(HermitTable, xValue)
         
@@ -110,6 +112,7 @@ def solveSystem():
 
         tableSecond.makeConfiguration(xValue, polyPow)
         ca.calculateDividedDiffNewton(tableSecond)
+        # tableSecond.printTable()
         
         xValue = ca.getPolyValue(tableSecond, xValue)
         yValue = ca.getPolyValue(tableFirst, xValue)
