@@ -1,7 +1,8 @@
 import calcAlg as ca
+import numpy as np
 from Table import Table
 
-fileName = "./data/data_new.csv"
+fileName = "./data/data.csv"
 
 def inputData():
 
@@ -57,6 +58,9 @@ if __name__ == "__main__":
     Table.printData(initTable.data, "init")
 
     xValue = inputData()
+
+    if not (np.amin(initTable.data[:, 0]) <= xValue <= np.amax(initTable.data[:, 0])):
+        raise ValueError("Extrapolation is forbidden!") from None
 
     if initTable.rows <= 3:
         splineInterpolation(xValue, 1)

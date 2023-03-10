@@ -44,8 +44,8 @@ class Table:
 
     def makeConfiguration(self, xValue, polyPow):
 
-        if not (np.amin(self.data[:, 0]) <= xValue <= np.amax(self.data[:, 0])):
-            raise ValueError("Extrapolation is forbidden!") from None
+        # if not (np.amin(self.data[:, 0]) <= xValue <= np.amax(self.data[:, 0])):
+        #     raise ValueError("Extrapolation is forbidden!") from None
         
         self.polyPow = polyPow
         index = 0

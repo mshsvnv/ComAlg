@@ -1,6 +1,8 @@
 import calcAlg as ca
 from classTable import Table
 
+fileName = "data/data_new.csv"
+
 def inputData():
 
     xValue = input("\nInput X: ")
@@ -25,8 +27,8 @@ def directInterpolation():
         NewtonTable = Table("Newton")                       
         HermitTable = Table("Hermit")
 
-        NewtonTable.readData("data/data_new.csv")
-        HermitTable.readData("data/data_new.csv")
+        NewtonTable.readData(fileName)
+        HermitTable.readData(fileName)
 
         if i == 0:
             NewtonTable.printTable("Initial Table")
@@ -61,8 +63,8 @@ def reverseInterpolation():
         NewtonTable = Table("Newton")                       
         HermitTable = Table("Hermit")
 
-        NewtonTable.readData("data/data_new.csv", "reverse")
-        HermitTable.readData("data/data_new.csv", "reverse")
+        NewtonTable.readData(fileName, "reverse")
+        HermitTable.readData(fileName, "reverse")
 
         NewtonTable.makeConfiguration(xValue, polyPow, 0)
         ca.calculateDividedDiffNewton(NewtonTable)
