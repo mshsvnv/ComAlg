@@ -14,7 +14,6 @@ def calculateDividedDiffNewton(myTable: Table):  # divided differences for Newto
         for i in range(myTable.columns - j - 2):
             myTable.data[i, j + 2] = (myTable.data[i, j + 1] - myTable.data[i + 1, j + 1]) / (myTable.data[i, 0] - myTable.data[j + i + 1, 0])
 
-    # print(myTable.data)
 def getPolyValue(myTable, xValue):
 
     yValue = myTable.data[0, -1]
@@ -56,8 +55,6 @@ def getC(myTable, beg, end):
     myTable.data[0, 4] = beg
     myTable.data[1, 4] = end
 
-    print(beg, end)
-
     if beg == 0 and end == 0:
         xi = [0, 0]
         theta = [0, 0]
@@ -87,9 +84,6 @@ def getC(myTable, beg, end):
         myTable.data[i - 1, 4] = xi[i] * myTable.data[i, 4] + theta[i]
 
     myTable.data[-2, 4] = end
-
-    for i in range(myTable.rows):
-        print(i, myTable.data[i, 4])
 
 def getPhi(y1, y2, y3, h1, h2):
     return 3 * ((y3 - y2) / h2 - (y2 - y1) / h1)
