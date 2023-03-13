@@ -3,7 +3,7 @@ import numpy as np
 from scipy.misc import derivative
 from matplotlib import pyplot as plt
 
-def calculateDividedDiffNewton(myTable: Table):  # divided differences for Newton Polynom
+def calculateDividedDiffNewton(myTable: Table):
 
     myTable.columns = myTable.polyPow + 2
 
@@ -47,7 +47,7 @@ def getBnD(myTable):
     h = myTable.data[-1, 0] - myTable.data[-2, 0]
 
     myTable.data[-1, 3] = (myTable.data[-1, 1] - myTable.data[-1, 2]) / h - \
-                        (h - (h * 2 * myTable.data[-1, 4]) / 3)
+                        ((h * 2 * myTable.data[-1, 4]) / 3)
     myTable.data[-1, 5] = -myTable.data[-1, 4] / (3 * h)
 
 def getC(myTable, beg, end):
