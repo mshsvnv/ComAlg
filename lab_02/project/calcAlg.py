@@ -53,17 +53,9 @@ def getBnD(myTable):
 def getC(myTable, beg, end):
 
     myTable.data[0, 4] = beg
-    myTable.data[1, 4] = end
 
-    if beg == 0 and end == 0:
-        xi = [0, 0]
-        theta = [0, 0]
-    elif end == 0:
-        xi = [beg, 0]
-        theta = [beg, 0]
-    else:
-        xi = [beg, end]
-        theta = [beg, end]
+    xi = [beg, beg]
+    theta = [beg, beg]
 
     for i in range(2, myTable.rows):
         h_2 = myTable.data[i, 0] - myTable.data[i - 1, 0]
@@ -78,18 +70,16 @@ def getC(myTable, beg, end):
         xi.append(xiCur)
         theta.append(thetaCur)
 
-    myTable.data[-2, 4] = theta[-1]
+    myTable.data[-1, 4] = end
 
     for i in range(myTable.rows - 2, 0, -1):
         myTable.data[i - 1, 4] = xi[i] * myTable.data[i, 4] + theta[i]
 
-    myTable.data[-2, 4] = end
-
 def getPhi(y1, y2, y3, h1, h2):
     return 3 * ((y3 - y2) / h2 - (y2 - y1) / h1)
 
-def getXi(xi1, h1, h2):
-    return - h1 / (h2 * xi1 + 2 * (h2 + h1))
+def getXi(xi, h1, h2):
+    return - h2 / (h1 * xi + 2 * (h2 + h1))
 
 def getTheta(phi, tetha, xi, h1, h2):
     return (phi - h1 * tetha) / (h1 * xi + 2 * (h2 + h1))
@@ -131,12 +121,12 @@ def getNewtonDerivative(number):
 
 def drawGraph(Newton, spline):
 
-    xList = np.linspace(np.min(Newton.data[:, 0]), np.max(Newton.data[:, 0]))
+    xList = np.linspace(np.min(Newton.data[:, 0]), np.max(Newton.data[:, 0]), 100)
     yList = np.array([getPolyValue(Newton, x) for x in xList])
     
     plt.plot(xList, yList, color='r', label = "Newton")
 
-    xList = np.linspace(np.min(spline.data[:, 0]), np.max(spline.data[:, 0]), 100)
+    xList = np.linspace(np.min(spline.data[:, 0]), np.max(spline.data[:, 0]), 1000)
     yList = np.array([getSplineValue(spline, x) for x in xList])
     
     plt.plot(xList, yList, "blue", label = "Spline")
