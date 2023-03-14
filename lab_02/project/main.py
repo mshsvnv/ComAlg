@@ -71,10 +71,13 @@ if __name__ == "__main__":
         splineInterpolation(xValue, 1)
         print("Unable Newton Interpolation of 3rd power due to lack of points!")
     else:
-        Newton = NewtonInterpolation(xValue)
+        NewtonInterpolation(xValue)
         spline = splineInterpolation(xValue)
 
-        ca.drawGraph(Newton, spline)
+        initTable.makeConfiguration((np.amin(initTable.data[:, 0]) + np.amax(initTable.data[:, 0]) / 2), 3)
+        ca.calculateDividedDiffNewton(initTable)
+
+        ca.drawGraph(initTable, spline)
 
         
 

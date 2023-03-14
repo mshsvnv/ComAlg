@@ -46,7 +46,7 @@ def getBnD(myTable):
 
     h = myTable.data[-1, 0] - myTable.data[-2, 0]
 
-    myTable.data[-1, 3] = (myTable.data[-1, 1] - myTable.data[-1, 2]) / h - \
+    myTable.data[-1, 3] = (myTable.data[-1, 1] - myTable.data[-2, 1]) / h - \
                         ((h * 2 * myTable.data[-1, 4]) / 3)
     myTable.data[-1, 5] = -myTable.data[-1, 4] / (3 * h)
 
@@ -54,8 +54,8 @@ def getC(myTable, beg, end):
 
     myTable.data[0, 4] = beg
 
-    xi = [beg, beg]
-    theta = [beg, beg]
+    xi = [beg]
+    theta = [beg]
 
     for i in range(2, myTable.rows):
         h_2 = myTable.data[i, 0] - myTable.data[i - 1, 0]
@@ -63,9 +63,9 @@ def getC(myTable, beg, end):
 
         phi = getPhi(myTable.data[i - 2, 1], myTable.data[i - 1, 1], myTable.data[i, 1], h_1, h_2)
         
-        xiCur = getXi(xi[i - 1], h_1, h_2)
+        xiCur = getXi(xi[i - 2], h_1, h_2)
 
-        thetaCur = getTheta(phi, theta[i - 1], xi[i - 1], h_1, h_2)
+        thetaCur = getTheta(phi, theta[i - 2], xi[i - 2], h_1, h_2)
         
         xi.append(xiCur)
         theta.append(thetaCur)
@@ -73,7 +73,7 @@ def getC(myTable, beg, end):
     myTable.data[-1, 4] = end
 
     for i in range(myTable.rows - 2, 0, -1):
-        myTable.data[i - 1, 4] = xi[i] * myTable.data[i, 4] + theta[i]
+        myTable.data[i - 1, 4] = xi[i - 1] * myTable.data[i, 4] + theta[i - 1]
 
 def getPhi(y1, y2, y3, h1, h2):
     return 3 * ((y3 - y2) / h2 - (y2 - y1) / h1)
