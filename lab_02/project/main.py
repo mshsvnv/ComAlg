@@ -20,7 +20,6 @@ def splineInterpolation(xValue, repeats = 3):
     splineTable = Table()
     splineTable.readData(fileName)
 
-    splines = []
     print("\nSpline:")
 
     beg, end = 0, 0
@@ -42,13 +41,15 @@ def splineInterpolation(xValue, repeats = 3):
         else:
             print("\tP''(x0) and P''(xn): {}".format(yValue))
 
+        # print(splineTable.data)
+
     return splineTable
 
-def NewtonInterpolation(xValue):
+def NewtonInterpolation(xValue, power):
 
     NewtonTable = Table()
     NewtonTable.readData(fileName)
-    NewtonTable.makeConfiguration(xValue, 3)
+    NewtonTable.makeConfiguration(xValue, power)
     ca.calculateDividedDiffNewton(NewtonTable)
 
     yValue = ca.getPolyValue(NewtonTable, xValue)
@@ -66,18 +67,17 @@ if __name__ == "__main__":
 
     if not (np.amin(initTable.data[:, 0]) <= xValue <= np.amax(initTable.data[:, 0])):
         raise ValueError("Extrapolation is forbidden!") from None
+    
+    power = 2
 
-    if initTable.rows <= 3:
-        splineInterpolation(xValue, 1)
-        print("Unable Newton Interpolation of 3rd power due to lack of points!")
-    else:
-        NewtonInterpolation(xValue)
-        spline = splineInterpolation(xValue)
+    if initTable.rows >= 4:
+        power = 3
 
-        initTable.makeConfiguration((np.amin(initTable.data[:, 0]) + np.amax(initTable.data[:, 0]) / 2), 3)
-        ca.calculateDividedDiffNewton(initTable)
+    Newton = NewtonInterpolation(xValue, power)
+    spline = splineInterpolation(xValue)
 
-        ca.drawGraph(initTable, spline)
+    ca.drawGraph(Newton, spline)
+        
 
         
 

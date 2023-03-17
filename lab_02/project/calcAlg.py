@@ -52,7 +52,7 @@ def getBnD(myTable):
 
 def getC(myTable, beg, end):
 
-    myTable.data[0, 4] = beg
+    myTable.data[0, 4] = beg / 2
 
     xi = [beg]
     theta = [beg]
@@ -70,10 +70,11 @@ def getC(myTable, beg, end):
         xi.append(xiCur)
         theta.append(thetaCur)
 
-    myTable.data[-1, 4] = end
+    myTable.data[-1, 4] = end / 2
 
     for i in range(myTable.rows - 2, 0, -1):
         myTable.data[i - 1, 4] = xi[i - 1] * myTable.data[i, 4] + theta[i - 1]
+
 
 def getPhi(y1, y2, y3, h1, h2):
     return 3 * ((y3 - y2) / h2 - (y2 - y1) / h1)
@@ -134,7 +135,7 @@ def drawGraph(Newton, spline):
     xList = spline.data[:, 0]
     yList = np.array([getSplineValue(spline, x) for x in xList])
     
-    plt.plot(xList, yList, "green", marker = ".")
+    plt.scatter(xList, yList, color = "green", label = "Init points")
     
     plt.legend()
     plt.show()
