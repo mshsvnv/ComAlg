@@ -17,20 +17,20 @@ def makeMultiDimInterpolationNewton(myTable: Table):
 
             xValues = xValues.reshape(xValues.shape[0] // 2, 2)
 
-            funcValue = getNewtonValue(xValues, myTable.values[0], int(myTable.powers[0]))
+            funcValue = NewtonMethod(xValues, myTable.values[0], int(myTable.powers[0]))
             yValues = np.append(yValues, [myTable.y[j], funcValue])
 
         yValues = yValues.reshape(yValues.shape[0] // 2, 2)
 
-        funcValue = getNewtonValue(yValues, myTable.values[1], int(myTable.powers[1]))
+        funcValue = NewtonMethod(yValues, myTable.values[1], int(myTable.powers[1]))
         zValues = np.append(zValues, [myTable.z[i], funcValue])
 
     zValues = zValues.reshape(zValues.shape[0] // 2, 2)
 
-    funcValue = getNewtonValue(zValues, myTable.values[2], int(myTable.powers[2]))
+    funcValue = NewtonMethod(zValues, myTable.values[2], int(myTable.powers[2]))
     return funcValue
 
-def makeMultiDimInterpolationNewton(myTable: Table):
+def makeMultiDimInterpolationSpline(myTable: Table):
     
     zValues = np.array([])
     for i in range(myTable.z.shape[0]):
@@ -44,21 +44,47 @@ def makeMultiDimInterpolationNewton(myTable: Table):
 
             xValues = xValues.reshape(xValues.shape[0] // 2, 2)
 
-            funcValue = getSplineValue(xValues, myTable.values[0], int(myTable.powers[0]))
+            funcValue = splineMethod(xValues, myTable.values[0])
             yValues = np.append(yValues, [myTable.y[j], funcValue])
 
         yValues = yValues.reshape(yValues.shape[0] // 2, 2)
 
-        funcValue = getSplineValue(yValues, myTable.values[1], int(myTable.powers[1]))
+        funcValue = splineMethod(yValues, myTable.values[1])
         zValues = np.append(zValues, [myTable.z[i], funcValue])
 
     zValues = zValues.reshape(zValues.shape[0] // 2, 2)
 
-    funcValue = getSplineValue(zValues, myTable.values[2], int(myTable.powers[2]))
+    funcValue = splineMethod(zValues, myTable.values[2])
     return funcValue
 
+def makeMultiDimInterpolationBoth(myTable: Table):
+    
+    zValues = np.array([])
+    for i in range(myTable.z.shape[0]):
+        
+        yValues = np.array([])
+        for j in range(myTable.y.shape[0]):
+            
+            xValues = np.array([])
+            for k in range(myTable.x.shape[0]):
+                xValues = np.append(xValues, [myTable.x[k], myTable.func[i][j][k]])
 
-def getNewtonValue(pointTable, xValue, polyPower):
+            xValues = xValues.reshape(xValues.shape[0] // 2, 2)
+
+            funcValue = NewtonMethod(xValues, myTable.values[0], int(myTable.powers[0]))
+            yValues = np.append(yValues, [myTable.y[j], funcValue])
+
+        yValues = yValues.reshape(yValues.shape[0] // 2, 2)
+
+        funcValue = splineMethod(yValues, myTable.values[1])
+        zValues = np.append(zValues, [myTable.z[i], funcValue])
+
+    zValues = zValues.reshape(zValues.shape[0] // 2, 2)
+
+    funcValue = NewtonMethod(zValues, myTable.values[2], int(myTable.powers[2]))
+    return funcValue
+
+def NewtonMethod(pointTable, xValue, polyPower):
 
     pointTable = makeConfiguration(pointTable, xValue, polyPower)
     pointTable = calculateDividedDiffNewton(pointTable, polyPower)
@@ -123,104 +149,104 @@ def getPolyValue(pointTable, xValue):
         yValue = pointTable[0, columns - i - 1] + (xValue - pointTable[rows - i - 1, 0]) * yValue
     return yValue
 
+def splineMethod(pointTable, xValue):
+
+    beg = 0
+    end = 0
+
+    pointTable = calculateSplineCoefs(pointTable, beg, end)
+    return getSplineValue(pointTable, xValue)
+
+def calculateSplineCoefs(pointTable, beg, end):
+
+    columns = 6
+    rows = pointTable.shape[0]
+
+    for i in range(columns - 2):
+        pointTable = np.append(pointTable, np.zeros((rows, 1)), axis = 1)
+    
+    pointTable[:, 2] = pointTable[:, 1] 
+
+    pointTable = getC(pointTable, beg, end)
+    pointTable = getBnD(pointTable)    
+
+    return pointTable
+
+def getBnD(pointTable):
+
+    rows = pointTable.shape[0]
+    
+    for i in range(1, rows):
+
+        h = pointTable[i, 0] - pointTable[i - 1, 0]
+        
+        pointTable[i - 1, 3] = (pointTable[i, 1] - pointTable[i - 1, 1]) / h - \
+                                (h * (pointTable[i, 4] + 2 * pointTable[i - 1, 4]) / 3)
+        pointTable[i - 1, 5]   = (pointTable[i, 4] - pointTable[i - 1, 4]) / (3 * h)
+
+    h = pointTable[-1, 0] - pointTable[-2, 0]
+
+    pointTable[-1, 3] = (pointTable[-1, 1] - pointTable[-2, 1]) / h - \
+                        ((h * 2 * pointTable[-1, 4]) / 3)
+    pointTable[-1, 5] = -pointTable[-1, 4] / (3 * h)
+
+    return pointTable
+
+def getC(pointTable, beg, end):
+
+    rows = pointTable.shape[0]
+    pointTable[0, 4] = beg / 2
+
+    xi = [0, beg]
+    theta = [0, beg]
+
+    for i in range(2, rows):
+        h_2 = pointTable[i, 0] - pointTable[i - 1, 0]
+        h_1 = pointTable[i - 1, 0] - pointTable[i - 2, 0]
+
+        phi = getPhi(pointTable[i - 2, 1], pointTable[i - 1, 1], pointTable[i, 1], h_1, h_2)
+        
+        xiCur = getXi(xi[i - 1], h_1, h_2)
+
+        thetaCur = getTheta(phi, theta[i - 1], xi[i - 1], h_1, h_2)
+        
+        xi.append(xiCur)
+        theta.append(thetaCur)
+
+    pointTable[-2, 4] = theta[-1]
+
+    for i in reversed(range(1, rows - 1)):
+        pointTable[i - 1, 4] = xi[i] * pointTable[i, 4] + theta[i]
+
+    return pointTable
+
+def getPhi(y1, y2, y3, h1, h2):
+    return 3 * ((y3 - y2) / h2 - (y2 - y1) / h1)
+
+def getXi(xi, h1, h2):
+    return - h2 / (h1 * xi + 2 * (h2 + h1))
+
+def getTheta(phi, tetha, xi, h1, h2):
+    return (phi - h1 * tetha) / (h1 * xi + 2 * (h2 + h1))
+
+def getIndex(pointTable, xValue):
+
+    rows = pointTable.shape[0]
+    index = 1
+
+    while (index < rows and pointTable[index, 0] < xValue):
+        index += 1
+
+    return index - 1
+
 def getSplineValue(pointTable, xValue):
-    pass
 
-# def calculateSplineCoefs(myTable, beg, end):
+    index = getIndex(pointTable, xValue)
 
-#     myTable.columns = 6
+    h = xValue - pointTable[index, 0]
+    y = 0
 
-#     for i in range(4):
-#         myTable.data = np.append(myTable.data, np.zeros((myTable.rows, 1)), axis = 1)
-    
-#     myTable.data[:, 2] = myTable.data[:, 1] 
+    for i in range(4):
+        y += pointTable[index, i + 2] * (h ** i)
 
-#     getC(myTable, beg, end)
-#     getBnD(myTable)    
-
-# def getBnD(myTable):
-    
-#     for i in range(1, myTable.rows):
-
-#         h = myTable.data[i, 0] - myTable.data[i - 1, 0]
-        
-#         myTable.data[i - 1, 3] = (myTable.data[i, 1] - myTable.data[i - 1, 1]) / h - \
-#                                 (h * (myTable.data[i, 4] + 2 * myTable.data[i - 1, 4]) / 3)
-#         myTable.data[i - 1, 5]   = (myTable.data[i, 4] - myTable.data[i - 1, 4]) / (3 * h)
-
-#     h = myTable.data[-1, 0] - myTable.data[-2, 0]
-
-#     myTable.data[-1, 3] = (myTable.data[-1, 1] - myTable.data[-2, 1]) / h - \
-#                         ((h * 2 * myTable.data[-1, 4]) / 3)
-#     myTable.data[-1, 5] = -myTable.data[-1, 4] / (3 * h)
-
-# def getC(myTable, beg, end):
-
-#     myTable.data[0, 4] = beg / 2
-
-#     xi = [beg]
-#     theta = [beg]
-
-#     for i in range(2, myTable.rows):
-#         h_2 = myTable.data[i, 0] - myTable.data[i - 1, 0]
-#         h_1 = myTable.data[i - 1, 0] - myTable.data[i - 2, 0]
-
-#         phi = getPhi(myTable.data[i - 2, 1], myTable.data[i - 1, 1], myTable.data[i, 1], h_1, h_2)
-        
-#         xiCur = getXi(xi[i - 2], h_1, h_2)
-
-#         thetaCur = getTheta(phi, theta[i - 2], xi[i - 2], h_1, h_2)
-        
-#         xi.append(xiCur)
-#         theta.append(thetaCur)
-
-#     myTable.data[-1, 4] = end / 2
-
-#     for i in range(myTable.rows - 2, 0, -1):
-#         myTable.data[i - 1, 4] = xi[i - 1] * myTable.data[i, 4] + theta[i - 1]
-
-
-# def getPhi(y1, y2, y3, h1, h2):
-#     return 3 * ((y3 - y2) / h2 - (y2 - y1) / h1)
-
-# def getXi(xi, h1, h2):
-#     return - h2 / (h1 * xi + 2 * (h2 + h1))
-
-# def getTheta(phi, tetha, xi, h1, h2):
-#     return (phi - h1 * tetha) / (h1 * xi + 2 * (h2 + h1))
-
-# def getIndex(myTable, xValue):
-
-#     index = 1
-
-#     while (index < myTable.rows and myTable.data[index, 0] < xValue):
-#         index += 1
-
-#     return index - 1
-
-# def getSplineValue(myTable, xValue):
-
-#     index = getIndex(myTable, xValue)
-
-#     h = xValue - myTable.data[index, 0]
-#     y = 0
-
-#     for i in range(4):
-#         y += myTable.data[index, i + 2] * (h ** i)
-
-#     return y
-
-# def getNewtonDerivative(number):
-    
-#     NewtonTable = Table()
-#     NewtonTable.readData("./data/data.csv")
-#     NewtonTable.makeConfiguration(NewtonTable.data[number, 0], 3)
-#     calculateDividedDiffNewton(NewtonTable)
-
-#     def aprocFunc(xValue):
-#         return getPolyValue(NewtonTable, xValue)
-    
-#     yDerivative = derivative(aprocFunc, NewtonTable.data[number, 0], n = 2, dx = 1e-6)
-
-#     return yDerivative
-
+    return y
