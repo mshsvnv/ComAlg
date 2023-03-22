@@ -107,13 +107,13 @@ class Table:
 
         field_names = ["ny\\nx"]
 
-        for i in range(len(powers[0])):
+        for i in range(int(powers[0])):
             field_names.append(str(i + 1))
 
         table.field_names = field_names
 
         for i in range(len(values[0])):
-            table.add_row(list(map(Table.getFormat, values[i])))
+            table.add_row(list(i + 1) + list(map(Table.getFormat, values[i])))
 
         print(table)
 
