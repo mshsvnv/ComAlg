@@ -4,14 +4,25 @@ import calcAlg as ca
 fileName = "data.txt"
 
 myTable = Table()
-myTable.readFile(fileName)
+# myTable.readFile(fileName)
 
-myTable.inputData()
+# генерация данных по значению функции
+# интервал -5 до 5 и количество узлов 5 также и в остальных
+xstart, xend, xpoints = -5, 5, 20
+ystart, yend, ypoints = -3, 4, 50
+zstart, zend, zpoints = -1, 2, 30
+#
+myTable.generateTable(xstart, xend, xpoints,
+                      ystart, yend, ypoints,
+                      zstart, zend, zpoints)
 
 myTable.printInitTable()
 
+myTable.inputData()
+
+print("\nFunction value: {:.4f}".format(myTable.f(myTable.values[0], myTable.values[1], myTable.values[2])))
 funcValue = ca.makeMultiDimInterpolationNewton(myTable)
-print("\nNewton interpolation: {:.4f}".format(funcValue))
+print("Newton interpolation: {:.4f}".format(funcValue))
 
 funcValue = ca.makeMultiDimInterpolationSpline(myTable)
 print("Spline interpolation: {:.4f}".format(funcValue))

@@ -1,7 +1,5 @@
 from Table import Table
 import numpy as np
-from scipy.misc import derivative
-from matplotlib import pyplot as plt
 
 def makeMultiDimInterpolationNewton(myTable: Table):
     
@@ -17,17 +15,17 @@ def makeMultiDimInterpolationNewton(myTable: Table):
 
             xValues = xValues.reshape(xValues.shape[0] // 2, 2)
 
-            funcValue = NewtonMethod(xValues, myTable.values[0], int(myTable.powers[0]))
+            funcValue = NewtonMethod(xValues, myTable.values[0], int(myTable.powers[0]) + 1)
             yValues = np.append(yValues, [myTable.y[j], funcValue])
 
         yValues = yValues.reshape(yValues.shape[0] // 2, 2)
 
-        funcValue = NewtonMethod(yValues, myTable.values[1], int(myTable.powers[1]))
+        funcValue = NewtonMethod(yValues, myTable.values[1], int(myTable.powers[1]) + 1)
         zValues = np.append(zValues, [myTable.z[i], funcValue])
 
     zValues = zValues.reshape(zValues.shape[0] // 2, 2)
 
-    funcValue = NewtonMethod(zValues, myTable.values[2], int(myTable.powers[2]))
+    funcValue = NewtonMethod(zValues, myTable.values[2], int(myTable.powers[2]) + 1)
     return funcValue
 
 def makeMultiDimInterpolationSpline(myTable: Table):
@@ -71,17 +69,16 @@ def makeMultiDimInterpolationBoth(myTable: Table):
 
             xValues = xValues.reshape(xValues.shape[0] // 2, 2)
 
-            funcValue = NewtonMethod(xValues, myTable.values[0], int(myTable.powers[0]))
+            funcValue = splineMethod(xValues, myTable.values[0])
             yValues = np.append(yValues, [myTable.y[j], funcValue])
 
         yValues = yValues.reshape(yValues.shape[0] // 2, 2)
 
-        funcValue = splineMethod(yValues, myTable.values[1])
+        funcValue = NewtonMethod(yValues, myTable.values[1], int(myTable.powers[1]) + 1)
         zValues = np.append(zValues, [myTable.z[i], funcValue])
 
     zValues = zValues.reshape(zValues.shape[0] // 2, 2)
-
-    funcValue = NewtonMethod(zValues, myTable.values[2], int(myTable.powers[2]))
+    funcValue = splineMethod(zValues, myTable.values[2])
     return funcValue
 
 def NewtonMethod(pointTable, xValue, polyPower):

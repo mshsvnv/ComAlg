@@ -14,6 +14,29 @@ class Table:
         self.powers = np.array([])
         self.values = np.array([])
 
+    @staticmethod
+    def f(x, y, z):
+        return 1. / (x + y) - z
+
+    def generateTable(self, sx, ex, amx, sy, ey, amy, sz, ez, amz):
+
+        self.x = np.linspace(sx, ex, amx)
+        self.y = np.linspace(sy, ey, amy)
+        self.z = np.linspace(sz, ez, amz)
+
+        for i in range(amz):
+            # self.func = np.append(self.func, np.array([]))
+            for j in range(amy):
+                # self.func[i] = np.append(self.func[i], np.array([]))
+                for k in range(amx):
+                    self.func = np.append(self.func, self.f(self.x[k],
+                                                                self.y[j],
+                                                                self.z[i]))
+                    
+        self.func = self.func.reshape(self.z.shape[0],
+                                      self.y.shape[0],
+                                      self.x.shape[0]) 
+
 
     def readFile(self, fileName):
         with open(fileName, 'r') as file:
