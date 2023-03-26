@@ -15,17 +15,17 @@ def makeMultiDimInterpolationNewton(myTable: Table):
 
             xValues = xValues.reshape(xValues.shape[0] // 2, 2)
 
-            funcValue = NewtonMethod(xValues, myTable.values[0], int(myTable.powers[0]) + 1)
+            funcValue = NewtonMethod(xValues, myTable.values[0], int(myTable.powers[0]))
             yValues = np.append(yValues, [myTable.y[j], funcValue])
 
         yValues = yValues.reshape(yValues.shape[0] // 2, 2)
 
-        funcValue = NewtonMethod(yValues, myTable.values[1], int(myTable.powers[1]) + 1)
+        funcValue = NewtonMethod(yValues, myTable.values[1], int(myTable.powers[1]))
         zValues = np.append(zValues, [myTable.z[i], funcValue])
 
     zValues = zValues.reshape(zValues.shape[0] // 2, 2)
 
-    funcValue = NewtonMethod(zValues, myTable.values[2], int(myTable.powers[2]) + 1)
+    funcValue = NewtonMethod(zValues, myTable.values[2], int(myTable.powers[2]))
     return funcValue
 
 def makeMultiDimInterpolationSpline(myTable: Table):
@@ -74,7 +74,7 @@ def makeMultiDimInterpolationBoth(myTable: Table):
 
         yValues = yValues.reshape(yValues.shape[0] // 2, 2)
 
-        funcValue = NewtonMethod(yValues, myTable.values[1], int(myTable.powers[1]) + 1)
+        funcValue = NewtonMethod(yValues, myTable.values[1], int(myTable.powers[1]))
         zValues = np.append(zValues, [myTable.z[i], funcValue])
 
     zValues = zValues.reshape(zValues.shape[0] // 2, 2)
@@ -84,6 +84,7 @@ def makeMultiDimInterpolationBoth(myTable: Table):
 def NewtonMethod(pointTable, xValue, polyPower):
 
     pointTable = makeConfiguration(pointTable, xValue, polyPower)
+    # print(pointTable)
     pointTable = calculateDividedDiffNewton(pointTable, polyPower)
     
     return getPolyValue(pointTable, xValue)

@@ -6,12 +6,10 @@ fileName = "data.txt"
 myTable = Table()
 # myTable.readFile(fileName)
 
-# генерация данных по значению функции
-# интервал -5 до 5 и количество узлов 5 также и в остальных
 xstart, xend, xpoints = -5, 5, 20
 ystart, yend, ypoints = -3, 4, 50
 zstart, zend, zpoints = -1, 2, 30
-#
+
 myTable.generateTable(xstart, xend, xpoints,
                       ystart, yend, ypoints,
                       zstart, zend, zpoints)
@@ -30,21 +28,21 @@ print("Spline interpolation: {:.4f}".format(funcValue))
 funcValue = ca.makeMultiDimInterpolationBoth(myTable)
 print("Newton + Spline interpolation: {:.4f}".format(funcValue))
 
-for nz in range(1, int(myTable.powers[2] + 1)):
+# for nz in range(1, int(myTable.powers[2] + 1)):
 
-    print("\nnz =", nz)
-    func1 = []
-    for ny in range(1, int(myTable.powers[0] + 1)):
+#     print("\nnz =", nz)
+#     func1 = []
+#     for ny in range(1, int(myTable.powers[0] + 1)):
 
-        func2 = []
-        for nx in range(1, int(myTable.powers[1] + 1)):
+#         func2 = []
+#         for nx in range(1, int(myTable.powers[1] + 1)):
 
-            old = myTable.powers
+#             old = myTable.powers
 
-            myTable.powers = [nz, ny, nz]
-            func2.append(ca.makeMultiDimInterpolationNewton(myTable))
+#             myTable.powers = [nz, ny, nz]
+#             func2.append(ca.makeMultiDimInterpolationNewton(myTable))
 
-            myTable.powers = old
-        func1.append(func2)
+#             myTable.powers = old
+#         func1.append(func2)
 
-    Table.printFinalTable(func1, myTable.powers)
+#     Table.printFinalTable(func1, myTable.powers)
