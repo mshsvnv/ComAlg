@@ -84,7 +84,6 @@ def makeMultiDimInterpolationBoth(myTable: Table):
 def NewtonMethod(pointTable, xValue, polyPower):
 
     pointTable = makeConfiguration(pointTable, xValue, polyPower)
-    # print(pointTable)
     pointTable = calculateDividedDiffNewton(pointTable, polyPower)
     
     return getPolyValue(pointTable, xValue)
