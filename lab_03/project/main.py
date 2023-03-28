@@ -4,21 +4,21 @@ import calcAlg as ca
 fileName = "data.txt"
 
 myTable = Table()
-# myTable.readFile(fileName)
+myTable.readFile(fileName)
 
-xstart, xend, xpoints = -5, 5, 20
-ystart, yend, ypoints = -3, 4, 50
-zstart, zend, zpoints = -1, 2, 30
+# xstart, xend, xpoints = -5, 5, 20
+# ystart, yend, ypoints = -3, 4, 50
+# zstart, zend, zpoints = -1, 2, 30
 
-myTable.generateTable(xstart, xend, xpoints,
-                      ystart, yend, ypoints,
-                      zstart, zend, zpoints)
+# myTable.generateTable(xstart, xend, xpoints,
+#                       ystart, yend, ypoints,
+#                       zstart, zend, zpoints)
 
 myTable.printInitTable()
 
 myTable.inputData()
 
-print("\nFunction value: {:.4f}".format(myTable.f(myTable.values[0], myTable.values[1], myTable.values[2])))
+# print("\nFunction value: {:.4f}".format(myTable.f(myTable.values[0], myTable.values[1], myTable.values[2])))
 funcValue = ca.makeMultiDimInterpolationNewton(myTable)
 print("Newton interpolation: {:.4f}".format(funcValue))
 
