@@ -54,18 +54,21 @@ class Table:
 
         fieldNames = ["№", "X", "Y"]
 
-        # if self.dimension == 1:
-        #     field
+        if self.dimension == 2:
+            fieldNames.append("Z")
 
         fieldNames.append("Weight")
 
         table.field_names = fieldNames
 
         for i in range(self.amount):
-            table.add_row([str(i + 1)] + 
-                          [Table.formatStr(self.x[i]), 
-                           Table.formatStr(self.y[i]),
-                           Table.formatStr(self.weight[i])])
+            data = [str(i + 1)] + [Table.formatStr(self.x[i]), 
+                           Table.formatStr(self.y[i])]
+            
+            if self.dimension == 2:
+                data += [Table.formatStr(self.z[i])]
+
+            data += [Table.formatStr(self.weight[i])]
         
         print(table)
 
