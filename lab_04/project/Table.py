@@ -59,6 +59,9 @@ class Table:
 
         if self.dimension == 1:
             self.y = np.array([func(x) for x in self.x])
+            self.y += np.random.normal(scale = 0.1, size = amount)
+            
+            self.weight = np.array([1 / abs(self.y[i] - func(self.x[i])) for i in range(amount)])
         else:
             yStart = min(params[2:])
             yEnd = max(params[2:])
@@ -66,11 +69,12 @@ class Table:
             self.y = np.linspace(yStart, yEnd, amount)
 
             self.z = np.array([func(self.x[i], self.y[i]) for i in range(amount)])
+            self.z += np.random.normal(scale = 0.1, size = amount)
 
+            self.weight = np.array([1 / abs(self.z[i] - func(self.x[i], self.y[i])) for i in range(amount)])
+        
         self.amount = amount
 
-        self.weight = np.array([r.randint(1, 10) for i in range(amount)])
-  
     def drawGraphics(self):
         
         if self.dimension == 1:
