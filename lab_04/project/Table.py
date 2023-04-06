@@ -2,7 +2,7 @@ import numpy as np
 import random as r
 import csv
 import prettytable as pt
-
+import matplotlib.pyplot as plt
 class Table:
 
     def __init__(self):
@@ -21,28 +21,78 @@ class Table:
             points = list(csv.DictReader(file))
 
         self.dimension = 2 if len(points[0]) == 4 else 1
+        data = np.empty((len(points), 2 + self.dimension))
 
+        self.amount = len(points)
+
+        i = 0
         for point in points:
-            self.x = np.append(self.x, float(point.get('x')))
-            self.y = np.append(self.y, float(point.get('y')))
+            data[i, 0] = float(point.get('x'))
+            data[i, 1] = float(point.get('y'))
 
             if self.dimension == 2:
-                self.z = np.append(self.z, float(point.get('z')))
-            
-            self.weight = np.append(self.weight, float(point.get('weight')))
-            
-        self.amount = np.shape(self.x)[0]            
+                data[i, 2] = float(point.get('z'))
+                data[i, 3] = float(point.get('weight'))
+            else:
+                data[i, 2] = float(point.get('weight'))
+            i += 1
+        
+        data = data[data[:, 0].argsort(kind = "mergesort")]
 
-    def generateTable(self, func, xStart, xEnd, amount):
+        self.x = data[:, 0]
+        self.y = data[:, 1]
 
-        step = (max(xStart, xEnd) - min(xStart, xEnd)) / amount
+        if self.dimension == 2:
+            self.z = data[:, 2]
+            self.weight = data[:, 3]
+        else:
+            self.weight = data[:, 2]
 
-        self.x = np.linspace(xStart, xEnd, step)
-        self.y = np.array((func(i) for i in self.x))
-        self.weight = np.array((r.randint(1, 10) for i in range(amount)))
+    def generateTable(self, func, amount, params: list):
+        
+        xStart = min(params[:2])
+        xEnd = max(params[:2])
 
+        self.dimension = 1 if len(params) == 2 else 2
+
+        self.x = np.linspace(xStart, xEnd, amount)
+
+        if self.dimension == 1:
+            self.y = np.array([func(x) for x in self.x])
+        else:
+            yStart = min(params[2:])
+            yEnd = max(params[2:])
+
+            self.y = np.linspace(yStart, yEnd, amount)
+
+            self.z = np.array([func(self.x[i], self.y[i]) for i in range(amount)])
+
+        self.amount = amount
+
+        self.weight = np.array([r.randint(1, 10) for i in range(amount)])
+  
     def drawGraphics(self):
-        pass
+        
+        if self.dimension == 1:
+            plt.grid(True)
+            plt.xlabel("X-axis")
+            plt.ylabel("Y-axis")
+
+            plt.scatter(self.x, self.y, color = "blue")
+            plt.legend(["Init data"])
+
+            plt.show()
+        else:
+            ax = plt.axes(projection="3d")
+
+            ax.set_xlabel("X-axis")
+            ax.set_ylabel("Y-axis")
+            ax.set_zlabel("Z-axis")
+
+            ax.scatter3D(self.x, self.y, self.z, color = "blue")
+            ax.legend(["Init data"])
+
+            plt.show()
 
     @staticmethod
     def formatStr(value):
@@ -69,6 +119,8 @@ class Table:
                 data += [Table.formatStr(self.z[i])]
 
             data += [Table.formatStr(self.weight[i])]
+
+            table.add_row(data)
         
         print(table)
 
