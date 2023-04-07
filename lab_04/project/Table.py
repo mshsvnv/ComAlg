@@ -14,6 +14,7 @@ class Table:
         self.dimension = None   # dimension
 
         self.amount = None      # amount of points
+        self.koefs = None
         
     def readFromFile(self, name: str):
 
@@ -59,7 +60,7 @@ class Table:
 
         if self.dimension == 1:
             self.y = np.array([func(x) for x in self.x])
-            self.y += np.random.normal(scale = 0.1, size = amount)
+            self.y += np.random.normal(scale = 5, size = amount)
             
             self.weight = np.array([1 / abs(self.y[i] - func(self.x[i])) for i in range(amount)])
         else:
@@ -69,34 +70,59 @@ class Table:
             self.y = np.linspace(yStart, yEnd, amount)
 
             self.z = np.array([func(self.x[i], self.y[i]) for i in range(amount)])
-            self.z += np.random.normal(scale = 0.1, size = amount)
+            self.z += np.random.normal(scale = 5, size = amount)
 
             self.weight = np.array([1 / abs(self.z[i] - func(self.x[i], self.y[i])) for i in range(amount)])
         
         self.amount = amount
 
-    def drawGraphics(self):
+    def drawGraphics(self, *args):
         
-        if self.dimension == 1:
-            plt.grid(True)
-            plt.xlabel("X-axis")
-            plt.ylabel("Y-axis")
+        print(args)
 
-            plt.scatter(self.x, self.y, color = "blue")
-            plt.legend(["Init data"])
+        # if self.dimension == 1:
+        #     plt.grid(True)
+        #     plt.xlabel("X-axis")
+        #     plt.ylabel("Y-axis")
 
-            plt.show()
-        else:
-            ax = plt.axes(projection="3d")
+        #     plt.scatter(self.x, self.y, color = "blue", label = "Init data")
 
-            ax.set_xlabel("X-axis")
-            ax.set_ylabel("Y-axis")
-            ax.set_zlabel("Z-axis")
+        #     x = np.linspace(self.x[0], self.x[-1], 100)
+        #     for koefs in args:
+        #         y = np.zeros((100, ))
 
-            ax.scatter3D(self.x, self.y, self.z, color = "blue")
-            ax.legend(["Init data"])
+        #         for i in range(100):
+        #             j = 0
+        #             for a in koefs[0]:
+        #                 y[i] += a * x[i] ** j
+        #                 j += 1
 
-            plt.show()
+        #         color = (r.random(), r.random(), r.random())
+
+        #         plt.plot(x, y, color = color, label = "{}-degree polynom".format(len(koefs[0]) - 1))
+            
+        #     plt.legend()
+        #     plt.show()
+        # else:
+        #     ax = plt.axes(projection="3d")
+
+        #     ax.set_xlabel("X-axis")
+        #     ax.set_ylabel("Y-axis")
+        #     ax.set_zlabel("Z-axis")
+
+        #     ax.scatter3D(self.x, self.y, self.z, color = "blue")
+        #     ax.legend(["Init data"])
+
+        #     x, y = np.meshgrid(np.linspace(self.x[0], self.x[-1], 100), 
+        #                        np.linspace(self.y[0], self.y[-1], 100))
+            
+        #     koefs = args[0]
+
+        #     z = koefs[0, 0] + koefs[0, 1] * x + koefs[0, 1] * y
+            
+        #     ax.plot_surface(x, y, z, cmap = "viridis")
+        #     # ax.legend(["Init data", "1-degree polynom"])
+        #     plt.show()
 
     @staticmethod
     def formatStr(value):
