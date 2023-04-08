@@ -5,10 +5,10 @@ from scipy.special import erfi
 import math
 
 def funcA(x):
-    return np.exp(x)
+    return x ** 2
 
 def funcB(x, y):
-    return x ** 2 + y ** 2
+    return x ** 2 + y ** 2 - x * y
 
 def getPolynomLine(x, koefs):
 

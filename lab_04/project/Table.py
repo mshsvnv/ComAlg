@@ -14,8 +14,7 @@ class Table:
         self.weight = None      # array of wights
         self.dimension = None   # dimension
 
-        # self.amountX = None      # amount of points (OX)
-        # self.amountY = None      # amount of points (OY)
+        self.delta = None       # variance
         
     def readFromFile(self, name: str):
 
@@ -60,11 +59,9 @@ class Table:
 
             self.x = np.linspace(xStart, xEnd, amount[0])
 
-            delta = np.random.normal(scale = 0.1, size = amount[0])
-            
-            self.y = func(self.x) + delta
-            
-            self.weight = 1 / np.abs(delta)
+            self.weight = np.random.uniform(low = 0, high = 0.5, size = amount[0])
+
+            self.y = func(self.x) * self.weight
 
         else:
             yStart = min(params[2:])
@@ -73,16 +70,32 @@ class Table:
             x = np.linspace(xStart, xEnd, amount[0])
             y = np.linspace(yStart, yEnd, amount[1])
 
-            delta = np.random.normal(scale = 10, size = amount[0] * amount[1])
+            self.weight = np.random.uniform(low = 0, high = 2, size = amount[0] * amount[1])
 
             Y, X = np.meshgrid(y, x)
-            W = 1 / np.abs(delta)
 
             self.x = X.ravel()
             self.y = Y.ravel()
-            self.z = func(self.x, self.y) + delta
+            self.z = func(self.x, self.y) * self.weight
+
+    def editWeight(self, opt, num = 1, weight = 1):
         
-            self.weight = W.ravel()
+        if opt == 1:
+            if self.dimension == 1:
+                self.y //= self.weight
+            else:
+                self.z //= self.weight
+            
+            self.weight //= self.weight
+        else:
+            if self.dimension == 1:
+                self.y[num - 1] //= self.weight[num - 1]
+                self.y[num - 1] *= weight
+            else:
+                self.z[num - 1] //= self.weight[num - 1]
+                self.z[num - 1] *= weight
+
+            self.weight[num - 1] = weight
 
     def drawGraphics(self, *args):
 

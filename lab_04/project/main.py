@@ -32,13 +32,15 @@ def changeWeights(myTable: Table):
     print(msg)
 
     opt = int(input("Enter option: "))
-    if opt == 1:
-        myTable.weight //= myTable.weight
-    else:
+
+    num = None
+    weight = None
+
+    if opt == 2:
         num = int(input("Enter number: "))
         weight = float(input("Enter weight: "))
-
-        myTable.weight[num - 1] = weight
+    
+    myTable.editWeight(opt, num, weight)
 
 oneDimTable = Table()
 twoDimTable = Table()
