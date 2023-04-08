@@ -5,33 +5,35 @@ fileNameOne = "../data/dataOne.csv"
 fileNameTwo = "../data/dataTwo.csv"
 
 def inputTableData(dim: int):
-    amount = int(input("Amount of nodes: "))
+
+    amountX = int(input("\nAmount of nodes: "))
     xStart = int(input("Start X: "))
     xEnd = int(input("End X: "))
 
     if dim == 1:
-        return amount, xStart, xEnd
+        return [amountX], xStart, xEnd
     else:
+        amountY = int(input("\nAmount of nodes: "))
         yStart = int(input("Start Y: "))
         yEnd = int(input("End Y: "))
 
-        return amount, xStart, xEnd, yStart, yEnd
+        return [amountX, amountY], xStart, xEnd, yStart, yEnd
 
 def inputPolyPow():
-    power = int(input("Polynom power: "))
+    power = int(input("\nPolynom power: "))
 
     return power
 
 def changeWeights(myTable: Table):
 
-    msg = "1. All ones\n" \
-          "2. By number\n" \
+    msg = "\n1. All ones\n" \
+          "2. By number\n"
     
     print(msg)
 
     opt = int(input("Enter option: "))
     if opt == 1:
-        myTable.weight *= 0
+        myTable.weight //= myTable.weight
     else:
         num = int(input("Enter number: "))
         weight = float(input("Enter weight: "))
@@ -77,9 +79,9 @@ def menu():
             changeWeights(oneDimTable)
         elif opt == 5:
             power = inputPolyPow()
-            koefs1 = ca.solveSystem(oneDimTable, 1)
-            koefs2 = ca.solveSystem(oneDimTable, 2)
-            koefsN = ca.solveSystem(oneDimTable, power)
+            koefs1 = ca.solveSystemOne(oneDimTable, 1)
+            koefs2 = ca.solveSystemOne(oneDimTable, 2)
+            koefsN = ca.solveSystemOne(oneDimTable, power)
             
             oneDimTable.drawGraphics(koefs1, koefs2, koefsN)
         elif opt == 6:
@@ -92,7 +94,9 @@ def menu():
         elif opt == 9:
             changeWeights(twoDimTable)
         elif opt == 10:
-            koefs = ca.solveSystemTwo(twoDimTable, 1)
+            power = inputPolyPow()
+
+            koefs = ca.solveSystemTwo(twoDimTable, power)
             twoDimTable.drawGraphics(koefs)
         elif opt == 11:
             ca.solveODE()

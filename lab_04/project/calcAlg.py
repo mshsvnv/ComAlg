@@ -5,10 +5,34 @@ from scipy.special import erfi
 import math
 
 def funcA(x):
-    return x ** 2 - x + 2.56
+    return np.exp(x)
 
 def funcB(x, y):
     return x ** 2 + y ** 2
+
+def getPolynomLine(x, koefs):
+
+    dim = np.shape(x)
+    
+    y = np.zeros(dim)
+
+    for i in range(dim[0]):
+
+        j = 0
+        for a in koefs:
+            y[i] += a * x[i] ** j
+            j += 1
+
+    return y
+
+def getPolynomSurface(x, y, koefs: list):
+   
+    if np.shape(koefs)[0] == 3:
+        z = koefs[0] + koefs[1] * x + koefs[2] * y
+    else:
+        z = koefs[0] + koefs[1] * x + koefs[2] * y + koefs[3] * x * y + koefs[4] * x ** 2 + koefs[5] * y ** 2 
+
+    return z
 
 def solveSystemOne(table, power):
 
@@ -22,14 +46,13 @@ def solveSystemOne(table, power):
 
     for i in range(dim):
         for j in range(dim):
-            koefsA[i, j] = np.sum([table.weight[k] * table.x[k] ** (i + j) for k in range(table.amount)])
+            koefsA[i, j] = np.sum(table.weight * table.x ** (i + j))
 
-        koefsB[i, 0] = np.sum([table.weight[k] * table.y[k] * table.x[k] ** (i) for k in range(table.amount)])
+        koefsB[i, 0] = np.sum(table.weight * table.y * table.x ** (i))
 
     koefs = solve(koefsA, koefsB)
 
     return koefs.reshape((dim, ))
-
     
 def solveSystemTwo(table, power):
 
@@ -98,7 +121,7 @@ def solveSystemTwo(table, power):
             [
             np.sum(table.weight * table.x ** 2),
             np.sum(table.weight * table.x ** 3),
-            np.sum(table.weight * table.y ** table.x ** 2),
+            np.sum(table.weight * table.y * table.x ** 2),
             np.sum(table.weight * table.x ** 3 * table.y),
             np.sum(table.weight * table.x ** 4),
             np.sum(table.weight * table.y ** 2 * table.x ** 2)
@@ -121,11 +144,12 @@ def solveSystemTwo(table, power):
             [np.sum(table.weight * table.z * table.x ** 2)],
             [np.sum(table.weight * table.z * table.y ** 2)]
         ])
-
     
     koefs = solve(koefsA, koefsB)
     
     return koefs.reshape((dim, ))
+
+############################ solve ODE ############################
 
 def getPolynom(x, n: int, koefs: list):
 
@@ -147,15 +171,15 @@ def solveODE():
 
     # m = 2
 
-    alphas = np.array([-2 + 2 * x - 3 * x ** 2])
-    bethas = np.array([2 - 6 * x + 3 * x ** 2 - 4 * x ** 3])
-    alphas_bethas = np.array([alphas * bethas])
+    alphas = -2 + 2 * x - 3 * x ** 2
+    bethas = 2 - 6 * x + 3 * x ** 2 - 4 * x ** 3
+    alphas_bethas = alphas * bethas
     
     koefsA = np.array([[np.sum(alphas ** 2), np.sum(alphas_bethas)],
                        [np.sum(alphas_bethas), np.sum(bethas ** 2)]])
    
-    sum_1 = np.array([alphas * (4 * x - 1)])
-    sum_2 = np.array([bethas * (4 * x - 1)])
+    sum_1 = alphas * (4 * x - 1)
+    sum_2 = bethas * (4 * x - 1)
     
     koefsB = np.array([[np.sum(sum_1)],
                        [np.sum(sum_2)]])
@@ -166,15 +190,15 @@ def solveODE():
 
     # m = 3
 
-    gammas = np.array([6 * x - 12 * x ** 2 + 4 * x ** 3 - 5 * x ** 4])
-    alphas_gammas = np.array([alphas * gammas])
-    bethas_gammas = np.array([bethas * gammas])
+    gammas = 6 * x - 12 * x ** 2 + 4 * x ** 3 - 5 * x ** 4
+    alphas_gammas = alphas * gammas
+    bethas_gammas = bethas * gammas
 
     koefsA = np.array([[np.sum(alphas ** 2), np.sum(alphas_bethas), np.sum(alphas_gammas)],
                        [np.sum(alphas_bethas), np.sum(bethas ** 2), np.sum(bethas_gammas)],
                        [np.sum(alphas_gammas), np.sum(bethas_gammas), np.sum(gammas ** 2)]])
     
-    sum_3 = np.array([gammas * (4 * x - 1)])
+    sum_3 = gammas * (4 * x - 1)
     
     koefsB = np.array([[np.sum(sum_1)],
                        [np.sum(sum_2)],
