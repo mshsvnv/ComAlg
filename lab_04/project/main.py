@@ -83,9 +83,14 @@ def menu():
             power = inputPolyPow()
             koefs1 = ca.solveSystemOne(oneDimTable, 1)
             koefs2 = ca.solveSystemOne(oneDimTable, 2)
-            koefsN = ca.solveSystemOne(oneDimTable, power)
-            
-            oneDimTable.drawGraphics(koefs1, koefs2, koefsN)
+
+            if power < len(oneDimTable.x):
+                koefsN = ca.solveSystemOne(oneDimTable, power)
+                oneDimTable.drawGraphics(koefs1, koefs2, koefsN)
+            else:
+                print("Not enough points for {}-power polynom!".format(power))
+                oneDimTable.drawGraphics(koefs1, koefs2)
+
         elif opt == 6:
             amount, xStart, xEnd, yStart, yEnd = inputTableData(2)
             twoDimTable.generateTable(ca.funcB, amount, [xStart, xEnd, yStart, yEnd])
@@ -98,8 +103,11 @@ def menu():
         elif opt == 10:
             power = inputPolyPow()
 
-            koefs = ca.solveSystemTwo(twoDimTable, power)
-            twoDimTable.drawGraphics(koefs)
+            if power != 1 or power != 2:
+                print("Incorrect power for polynom")
+            else:
+                koefs = ca.solveSystemTwo(twoDimTable, power)
+                twoDimTable.drawGraphics(koefs)
         elif opt == 11:
             ca.solveODE()
 
