@@ -103,7 +103,7 @@ def menu():
         elif opt == 10:
             power = inputPolyPow()
 
-            if power != 1 or power != 2:
+            if power != 1 and power != 2:
                 print("Incorrect power for polynom")
             else:
                 koefs = ca.solveSystemTwo(twoDimTable, power)

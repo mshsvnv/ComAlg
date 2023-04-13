@@ -5,7 +5,7 @@ from scipy.special import erfi
 import math
 
 def funcA(x):
-    return x ** 2
+    return np.cos(x)
 
 def funcB(x, y):
     return x ** 2 + y ** 2 - x * y
