@@ -52,7 +52,6 @@ def solveSystemOne(table, power):
 
     koefs = solve(koefsA, koefsB)
 
-
     return koefs.reshape((dim, ))
     
 def solveSystemTwo(table, power):
