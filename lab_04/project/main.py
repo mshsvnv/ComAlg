@@ -82,14 +82,17 @@ def menu():
         elif opt == 5:
             power = inputPolyPow()
             koefs1 = ca.solveSystemOne(oneDimTable, 1)
-            koefs2 = ca.solveSystemOne(oneDimTable, 2)
+            koefs2 = ca.solveSystemOne(oneDimTable, 4)
 
-            if power < len(oneDimTable.x):
-                koefsN = ca.solveSystemOne(oneDimTable, power)
-                oneDimTable.drawGraphics(koefs1, koefs2, koefsN)
-            else:
-                print("Not enough points for {}-power polynom!".format(power))
-                oneDimTable.drawGraphics(koefs1, koefs2)
+            koefsN = ca.solveSystemOne(oneDimTable, power)
+            oneDimTable.drawGraphics(koefs1, koefs2, koefsN)
+
+            # if power < len(oneDimTable.x):
+            #     koefsN = ca.solveSystemOne(oneDimTable, power)
+            #     oneDimTable.drawGraphics(koefs1, koefs2, koefsN)
+            # else:
+            #     print("Not enough points for {}-power polynom!".format(power))
+            #     oneDimTable.drawGraphics(koefs1, koefs2)
 
         elif opt == 6:
             amount, xStart, xEnd, yStart, yEnd = inputTableData(2)

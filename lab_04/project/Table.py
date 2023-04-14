@@ -27,14 +27,14 @@ class Table:
 
         i = 0
         for point in points:
-            data[i, 0] = float(point.get('x'))
-            data[i, 1] = float(point.get('y'))
+            data[i, 0] = np.float16(point.get('x'))
+            data[i, 1] = np.float16(point.get('y'))
 
             if self.dimension == 2:
-                data[i, 2] = float(point.get('z'))
-                data[i, 3] = float(point.get('weight'))
+                data[i, 2] = np.float16(point.get('z'))
+                data[i, 3] = np.float16(point.get('weight'))
             else:
-                data[i, 2] = float(point.get('weight'))
+                data[i, 2] = np.float16(point.get('weight'))
             i += 1
         
         data = data[data[:, 0].argsort(kind = "mergesort")]
@@ -61,7 +61,7 @@ class Table:
 
             self.weight = np.random.uniform(low = 0, high = 0.5, size = amount[0])
 
-            self.y = func(self.x) * self.weight
+            self.y = func(self.x) #* self.weight
 
         else:
             yStart = min(params[2:])
@@ -76,15 +76,15 @@ class Table:
 
             self.x = X.ravel()
             self.y = Y.ravel()
-            self.z = func(self.x, self.y) * self.weight
+            self.z = func(self.x, self.y) #* self.weight
 
     def editWeight(self, opt, num = 1, weight = 1):
         
         if opt == 1:
-            if self.dimension == 1:
-                self.y //= self.weight
-            else:
-                self.z //= self.weight
+            # if self.dimension == 1:
+            #     self.y //= self.weight
+            # else:
+            #     self.z //= self.weight
             
             self.weight //= self.weight
         else:
@@ -112,6 +112,7 @@ class Table:
             for koefs in args:
                 
                 y = ca.getPolynomLine(x, koefs)
+                print(koefs)
 
                 color = (r.random(), r.random(), r.random())
 
@@ -132,9 +133,10 @@ class Table:
 
             x, y = np.meshgrid(np.linspace(self.x[0], self.x[-1], 100), 
                                np.linspace(self.y[0], self.y[-1], 100))
-            
+           
             koefs = args[0]
 
+            print(koefs)
             z = ca.getPolynomSurface(x, y, koefs)
             
             ax.plot_surface(x, y, z, cmap = "viridis")

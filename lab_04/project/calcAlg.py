@@ -5,10 +5,10 @@ from scipy.special import erfi
 import math
 
 def funcA(x):
-    return np.cos(x)
+    return 0.5 * x ** 3 - 0.648
 
 def funcB(x, y):
-    return x ** 2 + y ** 2 - x * y
+    return (2 * x + y) * (-x + y + 1)
 
 def getPolynomLine(x, koefs):
 
@@ -48,7 +48,7 @@ def solveSystemOne(table, power):
         for j in range(dim):
             koefsA[i, j] = np.sum(table.weight * table.x ** (i + j))
 
-        koefsB[i, 0] = np.sum(table.weight * table.y * table.x ** (i))
+        koefsB[i, 0] = np.sum(table.weight * table.y * table.x ** i)
 
     koefs = solve(koefsA, koefsB)
 
@@ -156,17 +156,18 @@ def getPolynom(x, n: int, koefs: list):
     if n == 2:
         return 1 - x + koefs[0] * x * (1 - x) + koefs[1] * x ** 2 * (1 - x)
     else:
-        return 1 - x + koefs[0] * x * (1 - x) + koefs[1] * x ** 2 * (1 - x) +  koefs[2] * x ** 3 * (1 - x)
+        return 1 - x + koefs[0] * x * (1 - x) + koefs[1] * x ** 2 * (1 - x) + koefs[2] * x ** 3 * (1 - x)
 
 def getInitFunc(x):
     return (math.exp(-x**2/2) * ((1 + math.exp(x**2/2) * x) * erfi(1/math.sqrt(2)) - (1 + math.sqrt(math.e)) * erfi(x/math.sqrt(2))))/erfi(1/math.sqrt(2))
 
 def solveODE():
 
-    xStart = 1
-    xEnd = -1
+    xStart = -0.5
+    xEnd = 2
+    n = 10
 
-    x = np.linspace(xStart, xEnd, 100)
+    x = np.linspace(xStart, xEnd, n)
     y = np.array([getInitFunc(x_i) for x_i in x])
 
     # m = 2
@@ -185,6 +186,7 @@ def solveODE():
                        [np.sum(sum_2)]])
     
     koefsX_2 = solve(koefsA, koefsB).reshape((2, ))
+    print(koefsX_2)
 
     y_2 = getPolynom(x, 2, koefsX_2)
 
@@ -205,6 +207,7 @@ def solveODE():
                        [np.sum(sum_3)]])
 
     koefsX_3 = solve(koefsA, koefsB).reshape((3, ))
+    print(koefsX_3)
 
     y_3 = getPolynom(x, 3, koefsX_3)
 
