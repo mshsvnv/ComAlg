@@ -8,7 +8,7 @@ def funcA(x):
     return 0.5 * x ** 3 - 0.648
 
 def funcB(x, y):
-    return (2 * x + y) * (-x + y + 1)
+    return 2 * x ** 2 - 2 * y ** 2
 
 def getPolynomLine(x, koefs):
 

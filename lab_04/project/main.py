@@ -2,7 +2,7 @@ from Table import Table
 import calcAlg as ca
 
 fileNameOne = "../data/dataOne.csv"
-fileNameTwo = "../data/dataTwo.csv"
+fileNameTwo = "../data/new.csv"
 
 def inputTableData(dim: int):
 

@@ -78,6 +78,24 @@ class Table:
             self.y = Y.ravel()
             self.z = func(self.x, self.y) #* self.weight
 
+            self.writeToFile()
+    
+    def writeToFile(self):
+
+        with open("../data/new.csv", mode = "w") as w_file:
+
+            names = ["x", "y", "z", "weight"]
+
+            file_writer = csv.DictWriter(w_file, delimiter = ",", 
+                                        lineterminator="\r", fieldnames=names)
+            
+            file_writer.writeheader()
+
+            dim = np.shape(self.x)[0]
+
+            for i in range(dim):
+                file_writer.writerow({"x": self.formatStr(self.x[i]), "y": self.formatStr(self.y[i]), "z": self.formatStr(self.z[i]), "weight": self.formatStr(self.weight[i])})
+
     def editWeight(self, opt, num = 1, weight = 1):
         
         if opt == 1:
