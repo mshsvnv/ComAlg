@@ -131,8 +131,8 @@ class Table:
             
             ax.legend(["Init data"])
 
-            x, y = np.meshgrid(np.linspace(self.x[0], self.x[-1], 100), 
-                               np.linspace(self.y[0], self.y[-1], 100))
+            x, y = np.meshgrid(np.linspace(np.min(self.x), np.max(self.x), 100), 
+                               np.linspace(np.min(self.y), np.max(self.y), 100))
            
             koefs = args[0]
 
