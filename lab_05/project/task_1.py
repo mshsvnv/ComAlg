@@ -1,5 +1,12 @@
 import sympy as sym
 
+def Newton(vars, funcs):
+
+    F = sym.Matrix(funcs)
+    JacobianInv = sym.Matrix(funcs).jacobian(vars).det()
+
+    pass
+
 vars = ['x', 'y', 'z']
 funcs = ['x ** 2 + y ** 2 + z ** 2 - 1',
          '2 * x ** 2 + y ** 2 - 4 * z',
