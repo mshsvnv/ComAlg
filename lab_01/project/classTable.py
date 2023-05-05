@@ -202,7 +202,7 @@ class Table:
 
         print(table)
 
-    def printTable(self, method = "kek"):
+    def printTable(self, method = ""):
 
         self.table = pt.PrettyTable()
 

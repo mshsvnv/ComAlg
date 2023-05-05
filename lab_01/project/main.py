@@ -1,7 +1,7 @@
 import calcAlg as ca
 from classTable import Table
 
-fileName = "data/data_new.csv"
+fileName = "data/data.csv"
 
 def inputData():
 
