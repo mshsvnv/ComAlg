@@ -171,15 +171,12 @@ class Table:
 
         return newY
 
-
     def addDifferences(self, column):
 
         for i in range(self.rows):
             self.data[i, 1] -= column[i]
 
-            temp = self.data[i, 1]
-            self.data[i, 1] = self.data[i, 0]
-            self.data[i, 0] = temp
+            self.data[i, 1], self.data[i, 0] = self.data[i, 0], self.data[i, 1]
 
     @staticmethod
     def formatStr(value):
